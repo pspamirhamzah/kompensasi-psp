@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Kompensasi HET - PSP</title>
+  <title>Dashboard Kompensasi HET - PSP</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -39,10 +39,20 @@
 
   <!-- NAVBAR -->
   <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex justify-between items-center">
-    <div class="flex items-center gap-3">
-      <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-300">
-        <span class="material-symbols-rounded text-2xl">monitoring</span>
+    <div class="flex items-center gap-4">
+      <!-- LOGO AREA -->
+      <img 
+        src="logo_pusri.png" 
+        alt="Logo Pusri" 
+        class="h-14 w-auto object-contain"
+        onerror="this.style.display='none'; document.getElementById('fallback-icon').classList.remove('hidden');"
+      >
+      
+      <!-- Fallback Icon -->
+      <div id="fallback-icon" class="hidden p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-300">
+        <span class="material-symbols-rounded text-2xl">account_balance_wallet</span>
       </div>
+      
       <div>
         <h1 class="text-xl font-bold tracking-tight">Kompensasi HET - PSP</h1>
         <p class="text-xs text-gray-500 dark:text-gray-400">Monitoring Regional & Progress</p>
@@ -81,7 +91,7 @@
           </div>
         </div>
 
-        <!-- 2. Total PUD (Mitra) -->
+        <!-- 2. Total PUD -->
         <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
           <div class="absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity">
              <span class="material-symbols-rounded text-8xl text-indigo-600">store</span>
@@ -89,7 +99,7 @@
           <div>
             <div class="flex items-center gap-2 mb-1">
                 <span class="material-symbols-rounded text-3xl text-indigo-600">store</span>
-                <span class="text-xs md:text-sm font-medium text-gray-500">Mitra (PUD)</span>
+                <span class="text-xs md:text-sm font-medium text-gray-500">Total PUD</span>
             </div>
             <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mt-2" id="card-pud">0</p>
             <p class="text-[10px] md:text-xs text-gray-400 mt-1">Total Partisipan</p>
@@ -111,7 +121,7 @@
           </div>
         </div>
 
-        <!-- 4. Status Pembayaran -->
+        <!-- 4. Pembayaran -->
         <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
            <div class="absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity">
              <span class="material-symbols-rounded text-8xl text-amber-500">verified</span>
@@ -119,7 +129,7 @@
           <div>
             <div class="flex items-center gap-2 mb-1">
                 <span class="material-symbols-rounded text-3xl text-amber-500">verified</span>
-                <span class="text-xs md:text-sm font-medium text-gray-500">Lunas/Bayar</span>
+                <span class="text-xs md:text-sm font-medium text-gray-500">Pembayaran</span>
             </div>
             <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mt-2" id="card-bayar">0</p>
             <p class="text-[10px] md:text-xs text-gray-400 mt-1">Transaksi Selesai</p>
@@ -131,10 +141,25 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <!-- Chart: Regional Performance -->
         <div class="lg:col-span-2 bg-white dark:bg-[#1e1f20] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
-          <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
-            <span class="material-symbols-rounded text-gray-400">map</span>
-            Progress Regional
-          </h3>
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <h3 class="text-lg font-semibold flex items-center gap-2">
+              <span class="material-symbols-rounded text-gray-400">map</span>
+              Progress Regional
+            </h3>
+            
+            <!-- DROPDOWN FILTER CHART -->
+            <div class="relative">
+              <select id="chartMetricSelect" onchange="updateRegionalChart()" class="appearance-none bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 py-2 pl-4 pr-10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                <option value="pud">Berdasarkan Total PUD</option>
+                <option value="nilai">Berdasarkan Nilai (Rp)</option>
+                <option value="kuantum">Berdasarkan Kuantum (Kg)</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                <span class="material-symbols-rounded text-sm">expand_more</span>
+              </div>
+            </div>
+          </div>
+          
           <div class="h-72 w-full">
             <canvas id="chartRegional"></canvas>
           </div>
@@ -201,7 +226,8 @@
     }
 
     // --- LOGIC ---
-    let allTableRows = []; // Store all data globally for search
+    let allTableRows = []; 
+    let chartRegionalInstance, chartStatusInstance;
 
     window.onload = function() {
       initTheme();
@@ -228,7 +254,8 @@
         const json = await res.json();
         
         if(json.status === 'success') {
-           allTableRows = json.data; // Store data
+           allTableRows = json.data; 
+           console.log("Detected Columns:", Object.keys(allTableRows[0] || {}));
            renderDashboard(json);
         } else {
            throw new Error(json.message || "Kesalahan server.");
@@ -246,19 +273,61 @@
         errorEl.classList.remove('hidden');
     }
 
-    function checkIsCompleted(val) {
-      if(!val) return false;
-      return String(val).toUpperCase().includes('COMPLETED');
+    // --- SMART HEADER MATCHER ---
+    function findValueByHeader(row, keywords) {
+        const cleanKeys = Object.keys(row).reduce((acc, key) => {
+            const cleanKey = key.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+            acc[cleanKey] = key;
+            return acc;
+        }, {});
+
+        for (const keyword of keywords) {
+            const cleanKeyword = keyword.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+            if (cleanKeys[cleanKeyword]) return row[cleanKeys[cleanKeyword]];
+            const foundKey = Object.keys(cleanKeys).find(k => k.includes(cleanKeyword));
+            if (foundKey) return row[cleanKeys[foundKey]];
+        }
+        return '';
     }
 
-    function getFisikValue(row) {
-      return row['STATUS FISIK'] || row['DOKUMEN FISIK'] || row['FISIK'] || row['STATUS DOKUMEN'] || row['STATUS_FISIK'] || row['DOC_FISIK'] || '';
+    // --- DATA GETTERS ---
+    function getColPermintaan(row, type) {
+        if (type === 'nilai') return findValueByHeader(row, ['NILAI PERMINTAAN', 'NILAIPERMINTAAN']);
+        return findValueByHeader(row, ['KUANTUM PERMINTAAN', 'KUANTUMPERMINTAAN']);
     }
 
-    // --- SEARCH FUNCTION ---
+    function getRegional(row) {
+        return findValueByHeader(row, ['REGIONAL', 'REG', 'WILAYAH']) || 'LAINNYA';
+    }
+
+    function checkIsCompleted(row) {
+        const val = findValueByHeader(row, ['DOKUMEN FISIK', 'STATUS DOKUMEN', 'FISIK']);
+        return String(val || '').toUpperCase().includes('COMPLETED');
+    }
+
+    function checkStatusSelesai(row) {
+        const statDOF = findValueByHeader(row, ['STATUS DOF', 'STATUSDOF']); 
+        return String(statDOF || '').toUpperCase().trim() === 'SELESAI';
+    }
+
+    function parseIndonesianNumber(val) {
+        if (!val) return 0;
+        if (typeof val === 'number') return val;
+        let str = String(val).replace(/[^\d,.-]/g, '');
+        if (str.includes('.') && str.includes(',')) {
+            str = str.lastIndexOf(',') > str.lastIndexOf('.') ? str.replace(/\./g, '').replace(',', '.') : str.replace(/,/g, '');
+        } else if (str.includes('.')) {
+             if ((str.match(/\./g) || []).length > 1 || str.split('.')[1].length === 3) str = str.replace(/\./g, '');
+        } else if (str.includes(',')) {
+            str = str.replace(',', '.');
+        }
+        return parseFloat(str) || 0;
+    }
+
+    // --- SEARCH ---
     function handleSearch(keyword) {
         const filtered = allTableRows.filter(row => {
-            const pudName = (row['PUD'] || '').toLowerCase();
+            const pudName = (findValueByHeader(row, ['PUD', 'NAMA CV', 'MITRA']) || '').toLowerCase();
             return pudName.includes(keyword.toLowerCase());
         });
         renderTable(filtered);
@@ -269,104 +338,87 @@
       document.getElementById('dashboardContent').classList.remove('hidden');
 
       const summary = data.summary;
-      // Render Cards
-      document.getElementById('card-nilai').textContent = formatRupiah(summary.totalNilai);
-      document.getElementById('card-kuantum').textContent = summary.totalKuantum.toLocaleString('id-ID');
+      
+      // Calculate Total Cards using "Permintaan" Column
+      let totalNilaiReal = 0;
+      let totalKuantumReal = 0;
+      
+      data.data.forEach(r => {
+          totalNilaiReal += parseIndonesianNumber(getColPermintaan(r, 'nilai'));
+          totalKuantumReal += parseIndonesianNumber(getColPermintaan(r, 'kuantum'));
+      });
+
+      document.getElementById('card-nilai').textContent = formatRupiah(totalNilaiReal);
+      document.getElementById('card-kuantum').textContent = totalKuantumReal.toLocaleString('id-ID');
       document.getElementById('card-bayar').textContent = summary.sudahBayar;
       document.getElementById('card-pud').textContent = summary.totalUniquePUD;
 
-      // Render Charts
-      renderCharts(data.data, summary.statusDof);
-
-      // Render Table (Initial)
+      updateRegionalChart();
+      renderStatusChart(data.data);
       renderTable(data.data);
     }
 
-    function renderTable(rows) {
-      const tableBody = document.getElementById('table-body');
-      let tableHtml = '';
-      
-      // Limit to 10 rows for display
-      const rowsToShow = rows.slice(0, 10);
-
-      if(rowsToShow.length === 0) {
-        tableBody.innerHTML = `
-          <tr>
-            <td colspan="6" class="px-6 py-8 text-center text-gray-400">
-              <div class="flex flex-col items-center gap-2">
-                <span class="material-symbols-rounded text-4xl text-gray-300">search_off</span>
-                <span>Data tidak ditemukan</span>
-              </div>
-            </td>
-          </tr>`;
-        return;
-      }
-      
-      rowsToShow.forEach(row => {
-        const statusBayar = row['STATUS PEMBAYARAN'] || 'BELUM';
-        const badgeColorBayar = statusBayar.toUpperCase().includes('SUDAH') 
-          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
-          : 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300';
-        
-        const rawFisik = getFisikValue(row);
-        const isCompleted = checkIsCompleted(rawFisik);
-        const statusFisikDisplay = rawFisik || '-';
-
-        const badgeColorFisik = isCompleted
-          ? 'text-yellow-700 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-900/30'
-          : 'text-gray-500 bg-gray-100 dark:text-gray-400 dark:bg-gray-800';
-
-        const statusDof = row['STATUS DOF'] || '-';
-        const regional = row['REGIONAL'] || row['REG'] || '-';
-
-        tableHtml += `
-          <tr class="hover:bg-gray-50 dark:hover:bg-[#252628] transition-colors">
-            <td class="px-6 py-4 font-bold text-gray-500">${regional}</td>
-            <td class="px-6 py-4 font-medium">${row['PUD'] || '-'}</td>
-            <td class="px-6 py-4 text-center">
-              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badgeColorFisik} border border-transparent uppercase tracking-wide truncate max-w-[80px] block mx-auto" title="${statusFisikDisplay}">
-                ${statusFisikDisplay}
-              </span>
-            </td>
-            <td class="px-6 py-4 text-gray-500 text-xs">${statusDof}</td>
-            <td class="px-6 py-4 text-right font-mono">${formatRupiah(row['NILAI PERMINTAAN'])}</td>
-            <td class="px-6 py-4 text-center">
-              <span class="text-[10px] font-bold px-2 py-1 rounded-full ${badgeColorBayar} uppercase">${statusBayar}</span>
-            </td>
-          </tr>
-        `;
-      });
-      tableBody.innerHTML = tableHtml;
+    // --- FORMATTER FOR CHART NUMBERS ---
+    function formatCompactNumber(value, metric) {
+        if (metric === 'nilai') {
+            // Miliar
+            if (value >= 1e9) return (value / 1e9).toFixed(1).replace(/\.0$/, '') + ' M';
+            // Juta
+            if (value >= 1e6) return (value / 1e6).toFixed(1).replace(/\.0$/, '') + ' Jt';
+            // Fallback
+            return new Intl.NumberFormat('id-ID').format(value);
+        } 
+        if (metric === 'kuantum') {
+            // Ton (>= 1000 Kg)
+            if (value >= 1000) return (value / 1000).toFixed(1).replace(/\.0$/, '') + ' Ton';
+            return new Intl.NumberFormat('id-ID').format(value) + ' Kg';
+        }
+        return new Intl.NumberFormat('id-ID').format(value);
     }
 
-    let chartRegionalInstance, chartStatusInstance;
+    // --- CHART LOGIC UPDATED ---
+    function updateRegionalChart() {
+      const metric = document.getElementById('chartMetricSelect').value; 
+      renderRegionalChart(allTableRows, metric);
+    }
 
-    function renderCharts(rows, statusDofData) {
+    function renderRegionalChart(rows, metric) {
       const isDark = htmlEl.classList.contains('dark');
       const textColor = isDark ? '#e3e3e3' : '#475569';
       const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
       
       const regStats = {};
-      let totalMasuk = 0;
-      let totalDofSelesai = 0;
-      let totalFisikCompleted = 0;
       
       rows.forEach(r => {
-        if (r['PUD']) {
-            totalMasuk++;
-            if ((r['STATUS DOF'] || '').toUpperCase() === 'SELESAI') totalDofSelesai++;
-            if (checkIsCompleted(getFisikValue(r))) totalFisikCompleted++;
-        }
-
-        const rawReg = r['REGIONAL'] || r['REG'];
-        if (!rawReg) return; 
+        const rawReg = getRegional(r);
+        if (!rawReg || rawReg === 'LAINNYA') return; 
 
         const reg = rawReg.toUpperCase();
         if (!regStats[reg]) regStats[reg] = { total: 0, selesaiDof: 0, selesaiFisik: 0 };
         
-        regStats[reg].total += 1;
-        if ((r['STATUS DOF'] || '').toUpperCase() === 'SELESAI') regStats[reg].selesaiDof += 1;
-        if (checkIsCompleted(getFisikValue(r))) regStats[reg].selesaiFisik += 1;
+        // Logic Calculation
+        if (metric === 'kuantum' || metric === 'nilai') {
+            const valPermintaan = parseIndonesianNumber(getColPermintaan(r, metric));
+
+            // Bar 1: Total
+            regStats[reg].total += valPermintaan;
+
+            // Bar 2: DOF (Status SELESAI)
+            if (checkStatusSelesai(r)) {
+                 regStats[reg].selesaiDof += valPermintaan;
+            }
+
+            // Bar 3: Fisik (Status COMPLETED)
+            if (checkIsCompleted(r)) {
+                 regStats[reg].selesaiFisik += valPermintaan;
+            }
+
+        } else {
+            // Logic PUD (Count)
+            regStats[reg].total += 1;
+            if (checkStatusSelesai(r)) regStats[reg].selesaiDof += 1;
+            if (checkIsCompleted(r)) regStats[reg].selesaiFisik += 1;
+        }
       });
 
       const colorYellow = '#f9ab00'; 
@@ -378,14 +430,19 @@
       const ctxRegional = document.getElementById('chartRegional').getContext('2d');
       if(chartRegionalInstance) chartRegionalInstance.destroy();
       
+      // Label based on metric
+      let metricLabel = 'Total PUD';
+      if (metric === 'nilai') metricLabel = 'Total Nilai';
+      if (metric === 'kuantum') metricLabel = 'Total Kuantum';
+
       chartRegionalInstance = new Chart(ctxRegional, {
         type: 'bar',
         data: {
           labels: regions,
           datasets: [
-            { label: 'Total Data PUD', data: dataRegTotal, backgroundColor: '#0b57d0', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
-            { label: 'Selesai Sistem (DOF)', data: dataRegDof, backgroundColor: '#188038', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
-            { label: 'Fisik Completed', data: dataRegFisik, backgroundColor: colorYellow, borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 }
+            { label: metric === 'pud' ? 'Total PUD' : metricLabel, data: dataRegTotal, backgroundColor: '#0b57d0', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
+            { label: 'Proses DOF', data: dataRegDof, backgroundColor: '#188038', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
+            { label: 'Fisik Diterima', data: dataRegFisik, backgroundColor: colorYellow, borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 }
           ]
         },
         options: {
@@ -393,22 +450,60 @@
           maintainAspectRatio: false,
           plugins: { 
             legend: { position: 'top', labels: { color: textColor, usePointStyle: true } },
-            tooltip: { mode: 'index', intersect: false }
+            tooltip: { 
+                mode: 'index', 
+                intersect: false,
+                callbacks: {
+                    label: function(context) {
+                        // Gunakan format compact di tooltip juga agar rapi
+                        return context.dataset.label + ': ' + formatCompactNumber(context.raw, metric);
+                    }
+                }
+            }
           },
           scales: { 
-            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } }, 
+            y: { 
+                beginAtZero: true, 
+                grid: { color: gridColor }, 
+                ticks: { 
+                    color: textColor,
+                    maxTicksLimit: 6, // Added Max Ticks Limit here
+                    callback: function(value) {
+                        // Format Sumbu Y menjadi ringkas (M, Jt, Ton)
+                        return formatCompactNumber(value, metric);
+                    }
+                } 
+            }, 
             x: { grid: { display: false }, ticks: { color: textColor } } 
           }
         }
       });
+    }
 
+    function renderStatusChart(rows) {
+      const isDark = htmlEl.classList.contains('dark');
+      const textColor = isDark ? '#e3e3e3' : '#475569';
+      
+      let totalMasuk = 0;
+      let totalDofSelesai = 0;
+      let totalFisikCompleted = 0;
+
+      rows.forEach(r => {
+          if (findValueByHeader(r, ['PUD', 'NAMA CV'])) {
+              totalMasuk++;
+              if (checkStatusSelesai(r)) totalDofSelesai++;
+              if (checkIsCompleted(r)) totalFisikCompleted++;
+          }
+      });
+
+      const colorYellow = '#f9ab00'; 
       const ctxStatus = document.getElementById('chartStatus').getContext('2d');
       if(chartStatusInstance) chartStatusInstance.destroy();
 
       chartStatusInstance = new Chart(ctxStatus, {
         type: 'doughnut',
         data: {
-          labels: ['Data Masuk', 'Selesai DOF', 'Fisik Completed'],
+          labels: ['Data Masuk', 'Proses DOF', 'Fisik Diterima'], 
           datasets: [{
             data: [totalMasuk, totalDofSelesai, totalFisikCompleted],
             backgroundColor: ['#0b57d0', '#188038', colorYellow],
@@ -420,11 +515,55 @@
           responsive: true,
           maintainAspectRatio: false,
           cutout: '70%',
-          plugins: { 
-            legend: { position: 'right', labels: { color: textColor, boxWidth: 12, usePointStyle: true, padding: 15 } } 
-          }
+          plugins: { legend: { position: 'right', labels: { color: textColor, boxWidth: 12, usePointStyle: true, padding: 15 } } }
         }
       });
+    }
+
+    function renderTable(rows) {
+      const tableBody = document.getElementById('table-body');
+      let tableHtml = '';
+      
+      const rowsToShow = rows.slice(0, 10);
+
+      if(rowsToShow.length === 0) {
+        tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-gray-400">Data tidak ditemukan</td></tr>`;
+        return;
+      }
+      
+      rowsToShow.forEach(row => {
+        const statusBayar = findValueByHeader(row, ['STATUS PEMBAYARAN', 'BAYAR']) || 'BELUM';
+        const badgeColorBayar = statusBayar.toUpperCase().includes('SUDAH') 
+          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
+          : 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300';
+        
+        const isCompleted = checkIsCompleted(row);
+        const statusFisikDisplay = isCompleted ? 'DITERIMA' : (findValueByHeader(row, ['DOKUMEN FISIK']) || '-');
+        const badgeColorFisik = isCompleted
+          ? 'text-yellow-700 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-900/30'
+          : 'text-gray-500 bg-gray-100 dark:text-gray-400 dark:bg-gray-800';
+
+        const statusDof = findValueByHeader(row, ['STATUS DOF']) || '-';
+        const regional = getRegional(row);
+        const pudName = findValueByHeader(row, ['PUD', 'NAMA CV']);
+        const valRupiah = parseIndonesianNumber(getColPermintaan(row, 'nilai'));
+
+        tableHtml += `
+          <tr class="hover:bg-gray-50 dark:hover:bg-[#252628] transition-colors">
+            <td class="px-6 py-4 font-bold text-gray-500">${regional}</td>
+            <td class="px-6 py-4 font-medium">${pudName || '-'}</td>
+            <td class="px-6 py-4 text-center">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badgeColorFisik} border border-transparent uppercase tracking-wide truncate max-w-[80px] block mx-auto" title="${statusFisikDisplay}">${statusFisikDisplay}</span>
+            </td>
+            <td class="px-6 py-4 text-gray-500 text-xs">${statusDof}</td>
+            <td class="px-6 py-4 text-right font-mono">${formatRupiah(valRupiah)}</td>
+            <td class="px-6 py-4 text-center">
+              <span class="text-[10px] font-bold px-2 py-1 rounded-full ${badgeColorBayar} uppercase">${statusBayar}</span>
+            </td>
+          </tr>
+        `;
+      });
+      tableBody.innerHTML = tableHtml;
     }
 
     function formatRupiah(num) {
