@@ -32,7 +32,7 @@
 </head>
 <body class="bg-[#f0f4f9] dark:bg-[#131314] text-slate-800 dark:text-gray-200 min-h-screen flex flex-col transition-colors duration-300">
 
-  <!-- CONFIG: GANTI URL DI SINI -->
+  <!-- CONFIG: URL GOOGLE APPS SCRIPT -->
   <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywKScoceeAiCiAIiT_L8xHP-8KcdLI8pJpVAEhFrJbg8bqNBGkC-MwAcNhHSiQPk2BoQ/exec'; 
   </script>
@@ -56,54 +56,74 @@
   <!-- CONTENT -->
   <main class="flex-grow container mx-auto p-4 md:p-6 max-w-7xl space-y-6">
     
-    <!-- LOADING -->
+    <!-- LOADING & ERROR -->
     <div id="loading" class="flex flex-col justify-center items-center py-20 gap-3">
       <div class="loader"></div>
-      <p class="text-sm text-gray-500">Mengambil data...</p>
+      <p class="text-sm text-gray-500">Mengambil data dari Google Sheet...</p>
     </div>
-    <div id="errorMsg" class="hidden bg-red-100 text-red-700 p-4 rounded-lg"></div>
+    <div id="errorMsg" class="hidden bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-6 rounded-xl text-center border border-red-200 dark:border-red-800"></div>
 
     <div id="dashboardContent" class="hidden space-y-6">
       
       <!-- 5 KEY METRICS -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <!-- 1. Total Nilai -->
-        <div class="bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
-          <div class="flex items-center gap-2 md:gap-3 mb-2">
-            <span class="material-symbols-rounded text-green-600 bg-green-100 p-1.5 rounded-lg text-lg">payments</span>
-            <span class="text-xs md:text-sm font-medium text-gray-500">Total Nilai</span>
+        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
+          <div class="absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity">
+             <span class="material-symbols-rounded text-8xl text-green-600">payments</span>
           </div>
-          <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate" id="card-nilai">0</p>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="material-symbols-rounded text-3xl text-green-600">payments</span>
+                <span class="text-xs md:text-sm font-medium text-gray-500">Total Nilai</span>
+            </div>
+            <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2" id="card-nilai">0</p>
+          </div>
         </div>
 
         <!-- 2. Total PUD (Mitra) -->
-        <div class="bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
-          <div class="flex items-center gap-2 md:gap-3 mb-2">
-            <span class="material-symbols-rounded text-indigo-600 bg-indigo-100 p-1.5 rounded-lg text-lg">store</span>
-            <span class="text-xs md:text-sm font-medium text-gray-500">Mitra (PUD)</span>
+        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
+          <div class="absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity">
+             <span class="material-symbols-rounded text-8xl text-indigo-600">store</span>
           </div>
-          <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white" id="card-pud">0</p>
-          <p class="text-[10px] md:text-xs text-gray-400 mt-1">Total Partisipan</p>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="material-symbols-rounded text-3xl text-indigo-600">store</span>
+                <span class="text-xs md:text-sm font-medium text-gray-500">Mitra (PUD)</span>
+            </div>
+            <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mt-2" id="card-pud">0</p>
+            <p class="text-[10px] md:text-xs text-gray-400 mt-1">Total Partisipan</p>
+          </div>
         </div>
 
         <!-- 3. Total Kuantum -->
-        <div class="bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
-          <div class="flex items-center gap-2 md:gap-3 mb-2">
-            <span class="material-symbols-rounded text-blue-600 bg-blue-100 p-1.5 rounded-lg text-lg">scale</span>
-            <span class="text-xs md:text-sm font-medium text-gray-500">Total Kuantum</span>
+        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
+          <div class="absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity">
+             <span class="material-symbols-rounded text-8xl text-blue-600">scale</span>
           </div>
-          <p class="text-lg md:text-xl font-bold tracking-tight text-gray-900 dark:text-white truncate" id="card-kuantum">0</p>
-          <p class="text-[10px] md:text-xs text-gray-400 mt-1">Kilogram</p>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="material-symbols-rounded text-3xl text-blue-600">scale</span>
+                <span class="text-xs md:text-sm font-medium text-gray-500">Total Kuantum</span>
+            </div>
+            <p class="text-lg md:text-xl font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2" id="card-kuantum">0</p>
+            <p class="text-[10px] md:text-xs text-gray-400 mt-1">Kilogram</p>
+          </div>
         </div>
 
         <!-- 4. Status Pembayaran -->
-        <div class="bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
-          <div class="flex items-center gap-2 md:gap-3 mb-2">
-            <span class="material-symbols-rounded text-purple-600 bg-purple-100 p-1.5 rounded-lg text-lg">verified</span>
-            <span class="text-xs md:text-sm font-medium text-gray-500">Lunas/Bayar</span>
+        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
+           <div class="absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity">
+             <span class="material-symbols-rounded text-8xl text-amber-500">verified</span>
           </div>
-          <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white" id="card-bayar">0</p>
-          <p class="text-[10px] md:text-xs text-gray-400 mt-1">Transaksi Selesai</p>
+          <div>
+            <div class="flex items-center gap-2 mb-1">
+                <span class="material-symbols-rounded text-3xl text-amber-500">verified</span>
+                <span class="text-xs md:text-sm font-medium text-gray-500">Lunas/Bayar</span>
+            </div>
+            <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mt-2" id="card-bayar">0</p>
+            <p class="text-[10px] md:text-xs text-gray-400 mt-1">Transaksi Selesai</p>
+          </div>
         </div>
       </div>
 
@@ -182,19 +202,45 @@
     };
 
     async function fetchData() {
+      const loadingEl = document.getElementById('loading');
+      const errorEl = document.getElementById('errorMsg');
+      
+      // Reset UI state
+      loadingEl.classList.remove('hidden');
+      errorEl.classList.add('hidden');
+      document.getElementById('dashboardContent').classList.add('hidden');
+
       if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PASTE_URL')) {
-        renderMockData(); 
+        showError("URL Google Apps Script belum dikonfigurasi dengan benar di dalam kode.");
         return;
       }
+
       try {
         const res = await fetch(APPS_SCRIPT_URL);
+        
+        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+        
         const json = await res.json();
-        if(json.status === 'success') renderDashboard(json);
-        else throw new Error(json.message);
+        
+        if(json.status === 'success') {
+           renderDashboard(json);
+        } else {
+           throw new Error(json.message || "Terjadi kesalahan saat memproses data dari server.");
+        }
       } catch (err) {
-        console.warn("Fetch failed, using mock data", err);
-        renderMockData();
+        console.error("Fetch failed", err);
+        showError(`
+          <strong>Gagal mengambil data.</strong><br>
+          <span class="text-sm mt-2 block opacity-80">Pastikan URL Web App benar dan deployment script memiliki akses 'Anyone'.<br>Error: ${err.message}</span>
+        `);
       }
+    }
+
+    function showError(msg) {
+        document.getElementById('loading').classList.add('hidden');
+        const errorEl = document.getElementById('errorMsg');
+        errorEl.innerHTML = msg;
+        errorEl.classList.remove('hidden');
     }
 
     // --- HELPER FUNCTIONS ---
@@ -235,18 +281,20 @@
       const tableBody = document.getElementById('table-body');
       let tableHtml = '';
       
+      // Tampilkan maks 10 baris
       rows.slice(0, 10).forEach(row => {
         const statusBayar = row['STATUS PEMBAYARAN'] || 'BELUM';
         const badgeColorBayar = statusBayar.toUpperCase().includes('SUDAH') 
           ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
-          : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300';
+          : 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300';
         
         const rawFisik = getFisikValue(row);
         const isCompleted = checkIsCompleted(rawFisik);
         const statusFisikDisplay = rawFisik || '-';
 
+        // Ganti warna ungu jadi KUNING
         const badgeColorFisik = isCompleted
-          ? 'text-purple-700 bg-purple-100 dark:text-purple-300 dark:bg-purple-900/30'
+          ? 'text-yellow-700 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-900/30'
           : 'text-gray-500 bg-gray-100 dark:text-gray-400 dark:bg-gray-800';
 
         const statusDof = row['STATUS DOF'] || '-';
@@ -287,7 +335,6 @@
       
       rows.forEach(r => {
         // --- 1. Hitung untuk Chart Donat (Progress Keseluruhan) ---
-        // Jika ada nama PUD, anggap sebagai data masuk
         if (r['PUD']) {
             totalMasuk++;
             
@@ -322,6 +369,9 @@
         }
       });
 
+      // WARNA KUNING untuk menggantikan Ungu (#9334e6)
+      const colorYellow = '#f9ab00'; 
+
       // --- A. Render Chart Regional ---
       const regions = Object.keys(regStats);
       const dataRegTotal = regions.map(k => regStats[k].total);
@@ -355,7 +405,7 @@
             {
               label: 'Fisik Completed',
               data: dataRegFisik,
-              backgroundColor: '#9334e6', // Ungu
+              backgroundColor: colorYellow, // KUNING
               borderRadius: 4,
               barPercentage: 0.6,
               categoryPercentage: 0.8
@@ -382,7 +432,7 @@
 
       const donutLabels = ['Data Masuk', 'Selesai DOF', 'Fisik Completed'];
       const donutData = [totalMasuk, totalDofSelesai, totalFisikCompleted];
-      const donutColors = ['#0b57d0', '#188038', '#9334e6']; // Konsisten dengan bar chart
+      const donutColors = ['#0b57d0', '#188038', colorYellow]; // Konsisten KUNING
 
       chartStatusInstance = new Chart(ctxStatus, {
         type: 'doughnut',
@@ -415,35 +465,9 @@
 
     function updateChartColors() {
       // Refresh saat ganti tema
-    }
-
-    // --- MOCK DATA ---
-    function renderMockData() {
-      console.log("Rendering Mock Data Final");
-      const mockRows = [
-        { "REGIONAL": "SUMBAGSEL", "PUD": "CV MULIA ABADI", "STATUS DOF": "SELESAI", "STATUS FISIK": "COMPLETED", "DRAFTER": "GUNAWAN", "NILAI PERMINTAAN": 20501100, "STATUS PEMBAYARAN": "BELUM" },
-        { "REGIONAL": "SUMBAGSEL", "PUD": "CV WALADUN TANI", "STATUS DOF": "SELESAI", "STATUS FISIK": "COMPLETED", "DRAFTER": "GUNAWAN", "NILAI PERMINTAAN": 4725000, "STATUS PEMBAYARAN": "SUDAH" },
-        { "REGIONAL": "JABAR", "PUD": "CV MAJU JAYA", "STATUS DOF": "PENDING", "STATUS FISIK": "BELUM", "DRAFTER": "BUDI", "NILAI PERMINTAAN": 15000000, "STATUS PEMBAYARAN": "SUDAH" },
-        { "REGIONAL": "JABAR", "PUD": "PT SINTESA", "STATUS DOF": "PROSES", "DOKUMEN FISIK": "ADA", "DRAFTER": "SITI", "NILAI PERMINTAAN": 50000000, "STATUS PEMBAYARAN": "BELUM" },
-        { "REGIONAL": "JATENG", "PUD": "UD SUMBER REJEKI", "STATUS DOF": "SELESAI", "STATUS DOKUMEN": "COMPLETED", "DRAFTER": "SITI", "NILAI PERMINTAAN": 12000000, "STATUS PEMBAYARAN": "SUDAH" },
-        { "REGIONAL": "JATENG", "PUD": "CV TANI MAKMUR", "STATUS DOF": "PENDING", "STATUS FISIK": "BELUM", "DRAFTER": "SITI", "NILAI PERMINTAAN": 8000000, "STATUS PEMBAYARAN": "BELUM" },
-        { "REGIONAL": "SULAWESI", "PUD": "PT AGRO JAYA", "STATUS DOF": "SELESAI", "FISIK": "COMPLETED", "DRAFTER": "BUDI", "NILAI PERMINTAAN": 25000000, "STATUS PEMBAYARAN": "SUDAH" },
-      ];
-      
-      const summary = {
-        totalNilai: 135226100,
-        totalKuantum: 250000,
-        sudahBayar: 4,
-        totalUniquePUD: 7, 
-        statusDof: { "SELESAI": 4, "PENDING": 2, "PROSES": 1 },
-        totalData: 7
-      };
-
-      renderDashboard({
-        status: 'success',
-        data: mockRows,
-        summary: summary
-      });
+      // Dalam kasus real, data harus di-fetch ulang atau disimpan di variabel global
+      // untuk me-render ulang chart.
+      // Namun karena ini static file demo, kita biarkan user me-refresh page.
     }
   </script>
 </body>
