@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="id" class="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Kompensasi HET</title>
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'sans-serif'] },
+          colors: {
+            surface: { light: '#ffffff', dark: '#1e1f20' },
+            primary: { DEFAULT: '#0b57d0' }
+          }
+        }
+      }
+    }
+  </script>
+  
+  <style>
+    .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #0b57d0; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+  </style>
+</head>
+<body class="bg-[#f0f4f9] dark:bg-[#131314] text-slate-800 dark:text-gray-200 min-h-screen flex flex-col transition-colors duration-300">
+
+  <!-- CONFIG: GANTI URL DI SINI -->
+  <script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywKScoceeAiCiAIiT_L8xHP-8KcdLI8pJpVAEhFrJbg8bqNBGkC-MwAcNhHSiQPk2BoQ/exec'; 
+  </script>
+
+  <!-- NAVBAR -->
+  <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex justify-between items-center">
+    <div class="flex items-center gap-3">
+      <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-300">
+        <span class="material-symbols-rounded text-2xl">account_balance_wallet</span>
+      </div>
+      <div>
+        <h1 class="text-xl font-bold tracking-tight">Kompensasi HET</h1>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Monitoring Progress & Keuangan</p>
+      </div>
+    </div>
+    <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+      <span id="themeIcon" class="material-symbols-rounded">dark_mode</span>
+    </button>
+  </nav>
+
+  <!-- CONTENT -->
+  <main class="flex-grow container mx-auto p-4 md:p-6 max-w-7xl space-y-6">
+    
+    <!-- LOADING -->
+    <div id="loading" class="flex flex-col justify-center items-center py-20 gap-3">
+      <div class="loader"></div>
+      <p class="text-sm text-gray-500">Mengambil data...</p>
+    </div>
+    <div id="errorMsg" class="hidden bg-red-100 text-red-700 p-4 rounded-lg"></div>
+
+    <div id="dashboardContent" class="hidden space-y-6">
+      
+      <!-- 5 KEY METRICS (Responsive Grid) -->
+      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <!-- 1. Total Nilai -->
+        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm col-span-1 md:col-span-2 lg:col-span-2">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="material-symbols-rounded text-green-600 bg-green-100 p-1.5 rounded-lg text-lg">payments</span>
+            <span class="text-sm font-medium text-gray-500">Total Nilai Permintaan</span>
+          </div>
+          <p class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate" id="card-nilai">0</p>
+        </div>
+
+        <!-- 2. Total PUD (Mitra) -->
+        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="material-symbols-rounded text-indigo-600 bg-indigo-100 p-1.5 rounded-lg text-lg">store</span>
+            <span class="text-sm font-medium text-gray-500">Total PUD (Mitra)</span>
+          </div>
+          <p class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white" id="card-pud">0</p>
+          <p class="text-xs text-gray-400 mt-1">Mitra Berpartisipasi</p>
+        </div>
+
+        <!-- 3. Total Kuantum -->
+        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="material-symbols-rounded text-blue-600 bg-blue-100 p-1.5 rounded-lg text-lg">scale</span>
+            <span class="text-sm font-medium text-gray-500">Total Kuantum</span>
+          </div>
+          <p class="text-xl font-bold tracking-tight text-gray-900 dark:text-white truncate" id="card-kuantum">0</p>
+          <p class="text-xs text-gray-400 mt-1">Kilogram</p>
+        </div>
+
+        <!-- 4. Status Pembayaran -->
+        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+          <div class="flex items-center gap-3 mb-2">
+            <span class="material-symbols-rounded text-purple-600 bg-purple-100 p-1.5 rounded-lg text-lg">verified</span>
+            <span class="text-sm font-medium text-gray-500">Sudah Dibayar</span>
+          </div>
+          <p class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white" id="card-bayar">0</p>
+          <p class="text-xs text-gray-400 mt-1">Transaksi Selesai</p>
+        </div>
+      </div>
+
+      <!-- CHARTS AREA -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Chart: Drafter Performance -->
+        <div class="lg:col-span-2 bg-white dark:bg-[#1e1f20] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
+          <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
+            <span class="material-symbols-rounded text-gray-400">bar_chart</span>
+            Kinerja Drafter (Berdasarkan Nilai Permintaan)
+          </h3>
+          <div class="h-72 w-full">
+            <canvas id="chartDrafter"></canvas>
+          </div>
+        </div>
+
+        <!-- Chart: Status Proses DOF -->
+        <div class="bg-white dark:bg-[#1e1f20] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
+          <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
+            <span class="material-symbols-rounded text-gray-400">pie_chart</span>
+            Status Proses (DOF)
+          </h3>
+          <div class="h-64 w-full flex justify-center">
+            <canvas id="chartStatus"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- TABLE -->
+      <div class="bg-white dark:bg-[#1e1f20] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+        <div class="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+          <h3 class="text-lg font-semibold">Data Terbaru</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead class="bg-gray-50 dark:bg-[#252628] text-gray-500 uppercase font-medium">
+              <tr>
+                <th class="px-6 py-4">PUD (Nama CV)</th>
+                <th class="px-6 py-4">Status DOF</th>
+                <th class="px-6 py-4">Drafter</th>
+                <th class="px-6 py-4 text-right">Nilai Permintaan</th>
+                <th class="px-6 py-4 text-center">Status Bayar</th>
+              </tr>
+            </thead>
+            <tbody id="table-body" class="divide-y divide-gray-100 dark:divide-gray-800">
+              <!-- JS Injected -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // --- THEME ---
+    const htmlEl = document.documentElement;
+    function initTheme() {
+      if (localStorage.getItem('theme') === 'dark' || (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        htmlEl.classList.add('dark');
+        document.getElementById('themeIcon').textContent = 'light_mode';
+      }
+    }
+    function toggleTheme() {
+      htmlEl.classList.toggle('dark');
+      const isDark = htmlEl.classList.contains('dark');
+      localStorage.setItem('theme', isDark ? 'dark' : 'light');
+      document.getElementById('themeIcon').textContent = isDark ? 'light_mode' : 'dark_mode';
+      updateChartColors();
+    }
+
+    // --- LOGIC ---
+    window.onload = function() {
+      initTheme();
+      fetchData();
+    };
+
+    async function fetchData() {
+      if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PASTE_URL')) {
+        renderMockData(); 
+        return;
+      }
+      try {
+        const res = await fetch(APPS_SCRIPT_URL);
+        const json = await res.json();
+        if(json.status === 'success') renderDashboard(json);
+        else throw new Error(json.message);
+      } catch (err) {
+        console.warn("Fetch failed, using mock data", err);
+        renderMockData();
+      }
+    }
+
+    function renderDashboard(data) {
+      document.getElementById('loading').classList.add('hidden');
+      document.getElementById('dashboardContent').classList.remove('hidden');
+
+      const rows = data.data;
+      const summary = data.summary;
+
+      // 1. Render Cards
+      document.getElementById('card-nilai').textContent = formatRupiah(summary.totalNilai);
+      document.getElementById('card-kuantum').textContent = summary.totalKuantum.toLocaleString('id-ID');
+      document.getElementById('card-bayar').textContent = summary.sudahBayar;
+      document.getElementById('card-pud').textContent = summary.totalUniquePUD; // DATA BARU
+
+      // 2. Render Charts
+      renderCharts(rows, summary.statusDof);
+
+      // 3. Render Table (Top 10)
+      const tableBody = document.getElementById('table-body');
+      let tableHtml = '';
+      
+      rows.slice(0, 10).forEach(row => {
+        const statusBayar = row['STATUS PEMBAYARAN'] || 'BELUM';
+        const badgeColor = statusBayar.toUpperCase().includes('SUDAH') 
+          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
+          : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300';
+        
+        const statusDof = row['STATUS DOF'] || '-';
+
+        tableHtml += `
+          <tr class="hover:bg-gray-50 dark:hover:bg-[#252628] transition-colors">
+            <td class="px-6 py-4 font-medium">${row['PUD'] || '-'}</td>
+            <td class="px-6 py-4 text-gray-500">${statusDof}</td>
+            <td class="px-6 py-4">${row['DRAFTER'] || '-'}</td>
+            <td class="px-6 py-4 text-right font-mono">${formatRupiah(row['NILAI PERMINTAAN'])}</td>
+            <td class="px-6 py-4 text-center">
+              <span class="text-xs font-semibold px-2 py-1 rounded-full ${badgeColor}">${statusBayar}</span>
+            </td>
+          </tr>
+        `;
+      });
+      tableBody.innerHTML = tableHtml;
+    }
+
+    let chartDrafterInstance, chartStatusInstance;
+
+    function renderCharts(rows, statusDofData) {
+      const isDark = htmlEl.classList.contains('dark');
+      
+      // A. Drafter Performance
+      const drafterStats = {};
+      rows.forEach(r => {
+        const name = r['DRAFTER'] || 'Unknown';
+        const val = Number(r['NILAI PERMINTAAN']) || 0;
+        drafterStats[name] = (drafterStats[name] || 0) + val;
+      });
+      
+      const ctxDrafter = document.getElementById('chartDrafter').getContext('2d');
+      if(chartDrafterInstance) chartDrafterInstance.destroy();
+      
+      chartDrafterInstance = new Chart(ctxDrafter, {
+        type: 'bar',
+        data: {
+          labels: Object.keys(drafterStats),
+          datasets: [{
+            label: 'Total Nilai (Rp)',
+            data: Object.values(drafterStats),
+            backgroundColor: '#0b57d0',
+            borderRadius: 6,
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false } },
+          scales: { 
+            y: { beginAtZero: true, grid: { color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#e3e3e3' : '#475569' } }, 
+            x: { grid: { display: false }, ticks: { color: isDark ? '#e3e3e3' : '#475569' } } 
+          }
+        }
+      });
+
+      // B. Status Proses (DOF) - CHART BARU
+      const ctxStatus = document.getElementById('chartStatus').getContext('2d');
+      if(chartStatusInstance) chartStatusInstance.destroy();
+
+      // Gunakan data dari backend summary atau hitung manual jika preview
+      const statusLabels = statusDofData ? Object.keys(statusDofData) : ['SELESAI', 'PENDING'];
+      const statusValues = statusDofData ? Object.values(statusDofData) : [10, 5];
+      const colors = ['#188038', '#f9ab00', '#d93025', '#0b57d0', '#9334e6'];
+
+      chartStatusInstance = new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+          labels: statusLabels,
+          datasets: [{
+            data: statusValues,
+            backgroundColor: colors.slice(0, statusLabels.length),
+            borderWidth: 0
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          cutout: '70%',
+          plugins: { legend: { position: 'right', labels: { color: isDark ? '#e3e3e3' : '#475569', boxWidth: 12, usePointStyle: true } } }
+        }
+      });
+    }
+
+    function formatRupiah(num) {
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num || 0);
+    }
+
+    function updateChartColors() {
+      // Re-render chart jika tema berubah untuk update warna text
+      // Dalam implementasi sederhana ini, user perlu refresh atau fungsi renderCharts dipanggil ulang
+      // Namun CSS transisi sudah menangani UI utama
+    }
+
+    // --- MOCK DATA ---
+    function renderMockData() {
+      console.log("Rendering Mock Data");
+      const mockRows = [
+        { "PUD": "CV MULIA ABADI", "STATUS DOF": "SELESAI", "DRAFTER": "GUNAWAN", "NILAI PERMINTAAN": 20501100, "STATUS PEMBAYARAN": "BELUM" },
+        { "PUD": "CV WALADUN TANI", "STATUS DOF": "SELESAI", "DRAFTER": "GUNAWAN", "NILAI PERMINTAAN": 4725000, "STATUS PEMBAYARAN": "SUDAH" },
+        { "PUD": "CV MAJU JAYA", "STATUS DOF": "PENDING", "DRAFTER": "BUDI", "NILAI PERMINTAAN": 15000000, "STATUS PEMBAYARAN": "SUDAH" },
+        { "PUD": "PT SINTESA", "STATUS DOF": "PROSES", "DRAFTER": "SITI", "NILAI PERMINTAAN": 50000000, "STATUS PEMBAYARAN": "BELUM" },
+      ];
+      renderDashboard({
+        status: 'success',
+        data: mockRows,
+        summary: {
+          totalNilai: 90226100,
+          totalKuantum: 186058,
+          sudahBayar: 2,
+          totalUniquePUD: 4, // Mock
+          statusDof: { "SELESAI": 2, "PENDING": 1, "PROSES": 1 }, // Mock
+          totalData: 4
+        }
+      });
+    }
+  </script>
+</body>
+</html>
