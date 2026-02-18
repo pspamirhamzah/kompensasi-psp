@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Kompensasi HET - PSP</title>
+  <title>Dashboard Kompensasi HET - Regional & Fisik</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -44,7 +44,7 @@
         <span class="material-symbols-rounded text-2xl">monitoring</span>
       </div>
       <div>
-        <h1 class="text-xl font-bold tracking-tight">Kompensasi HET - PSP</h1>
+        <h1 class="text-xl font-bold tracking-tight">Kompensasi HET</h1>
         <p class="text-xs text-gray-500 dark:text-gray-400">Monitoring Regional & Progress</p>
       </div>
     </div>
@@ -154,18 +154,23 @@
 
       <!-- TABLE -->
       <div class="bg-white dark:bg-[#1e1f20] rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
-        <div class="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center">
+        <div class="p-6 border-b border-gray-100 dark:border-gray-800 flex flex-col md:flex-row justify-between items-center gap-4">
           <h3 class="text-lg font-semibold">Data Terbaru</h3>
+          <!-- SEARCH INPUT -->
+          <div class="relative w-full md:w-64">
+            <span class="material-symbols-rounded absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">search</span>
+            <input type="text" id="searchInput" placeholder="Cari Nama PUD..." class="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 transition-all dark:text-gray-200" oninput="handleSearch(this.value)">
+          </div>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left text-sm">
             <thead class="bg-gray-50 dark:bg-[#252628] text-gray-500 uppercase font-medium">
               <tr>
-                <th class="px-6 py-4">Regional</th>
-                <th class="px-6 py-4">PUD (Nama CV)</th>
+                <th class="px-6 py-4">REG</th>
+                <th class="px-6 py-4">PUD</th>
                 <th class="px-6 py-4 text-center">Dok. Fisik</th>
-                <th class="px-6 py-4">Status DOF</th>
-                <th class="px-6 py-4 text-right">Nilai Permintaan</th>
+                <th class="px-6 py-4">DOF</th>
+                <th class="px-6 py-4 text-right">Nilai Rupiah</th>
                 <th class="px-6 py-4 text-center">Status Bayar</th>
               </tr>
             </thead>
@@ -196,6 +201,8 @@
     }
 
     // --- LOGIC ---
+    let allTableRows = []; // Store all data globally for search
+
     window.onload = function() {
       initTheme();
       fetchData();
@@ -205,34 +212,30 @@
       const loadingEl = document.getElementById('loading');
       const errorEl = document.getElementById('errorMsg');
       
-      // Reset UI state
       loadingEl.classList.remove('hidden');
       errorEl.classList.add('hidden');
       document.getElementById('dashboardContent').classList.add('hidden');
 
       if (!APPS_SCRIPT_URL || APPS_SCRIPT_URL.includes('PASTE_URL')) {
-        showError("URL Google Apps Script belum dikonfigurasi dengan benar di dalam kode.");
+        showError("URL Google Apps Script belum dikonfigurasi.");
         return;
       }
 
       try {
         const res = await fetch(APPS_SCRIPT_URL);
-        
         if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
         
         const json = await res.json();
         
         if(json.status === 'success') {
+           allTableRows = json.data; // Store data
            renderDashboard(json);
         } else {
-           throw new Error(json.message || "Terjadi kesalahan saat memproses data dari server.");
+           throw new Error(json.message || "Kesalahan server.");
         }
       } catch (err) {
         console.error("Fetch failed", err);
-        showError(`
-          <strong>Gagal mengambil data.</strong><br>
-          <span class="text-sm mt-2 block opacity-80">Pastikan URL Web App benar dan deployment script memiliki akses 'Anyone'.<br>Error: ${err.message}</span>
-        `);
+        showError(`Gagal mengambil data.<br><span class="text-sm opacity-80">${err.message}</span>`);
       }
     }
 
@@ -243,46 +246,63 @@
         errorEl.classList.remove('hidden');
     }
 
-    // --- HELPER FUNCTIONS ---
-    
     function checkIsCompleted(val) {
       if(!val) return false;
-      const v = String(val).toUpperCase();
-      return v.includes('COMPLETED');
+      return String(val).toUpperCase().includes('COMPLETED');
     }
 
     function getFisikValue(row) {
-      return row['STATUS FISIK'] || 
-             row['DOKUMEN FISIK'] || 
-             row['FISIK'] || 
-             row['STATUS DOKUMEN'] || 
-             row['STATUS_FISIK'] || 
-             row['DOC_FISIK'] ||
-             '';
+      return row['STATUS FISIK'] || row['DOKUMEN FISIK'] || row['FISIK'] || row['STATUS DOKUMEN'] || row['STATUS_FISIK'] || row['DOC_FISIK'] || '';
+    }
+
+    // --- SEARCH FUNCTION ---
+    function handleSearch(keyword) {
+        const filtered = allTableRows.filter(row => {
+            const pudName = (row['PUD'] || '').toLowerCase();
+            return pudName.includes(keyword.toLowerCase());
+        });
+        renderTable(filtered);
     }
 
     function renderDashboard(data) {
       document.getElementById('loading').classList.add('hidden');
       document.getElementById('dashboardContent').classList.remove('hidden');
 
-      const rows = data.data;
       const summary = data.summary;
-
-      // 1. Render Cards
+      // Render Cards
       document.getElementById('card-nilai').textContent = formatRupiah(summary.totalNilai);
       document.getElementById('card-kuantum').textContent = summary.totalKuantum.toLocaleString('id-ID');
       document.getElementById('card-bayar').textContent = summary.sudahBayar;
       document.getElementById('card-pud').textContent = summary.totalUniquePUD;
 
-      // 2. Render Charts
-      renderCharts(rows, summary.statusDof);
+      // Render Charts
+      renderCharts(data.data, summary.statusDof);
 
-      // 3. Render Table (Top 10)
+      // Render Table (Initial)
+      renderTable(data.data);
+    }
+
+    function renderTable(rows) {
       const tableBody = document.getElementById('table-body');
       let tableHtml = '';
       
-      // Tampilkan maks 10 baris
-      rows.slice(0, 10).forEach(row => {
+      // Limit to 10 rows for display
+      const rowsToShow = rows.slice(0, 10);
+
+      if(rowsToShow.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="6" class="px-6 py-8 text-center text-gray-400">
+              <div class="flex flex-col items-center gap-2">
+                <span class="material-symbols-rounded text-4xl text-gray-300">search_off</span>
+                <span>Data tidak ditemukan</span>
+              </div>
+            </td>
+          </tr>`;
+        return;
+      }
+      
+      rowsToShow.forEach(row => {
         const statusBayar = row['STATUS PEMBAYARAN'] || 'BELUM';
         const badgeColorBayar = statusBayar.toUpperCase().includes('SUDAH') 
           ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
@@ -292,7 +312,6 @@
         const isCompleted = checkIsCompleted(rawFisik);
         const statusFisikDisplay = rawFisik || '-';
 
-        // Ganti warna ungu jadi KUNING
         const badgeColorFisik = isCompleted
           ? 'text-yellow-700 bg-yellow-100 dark:text-yellow-300 dark:bg-yellow-900/30'
           : 'text-gray-500 bg-gray-100 dark:text-gray-400 dark:bg-gray-800';
@@ -327,52 +346,30 @@
       const textColor = isDark ? '#e3e3e3' : '#475569';
       const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
       
-      // --- LOGIKA DATA ---
       const regStats = {};
       let totalMasuk = 0;
       let totalDofSelesai = 0;
       let totalFisikCompleted = 0;
       
       rows.forEach(r => {
-        // --- 1. Hitung untuk Chart Donat (Progress Keseluruhan) ---
         if (r['PUD']) {
             totalMasuk++;
-            
-            const statusDof = (r['STATUS DOF'] || '').toUpperCase();
-            if (statusDof === 'SELESAI') {
-                totalDofSelesai++;
-            }
-
-            const rawFisik = getFisikValue(r);
-            if (checkIsCompleted(rawFisik)) {
-                totalFisikCompleted++;
-            }
+            if ((r['STATUS DOF'] || '').toUpperCase() === 'SELESAI') totalDofSelesai++;
+            if (checkIsCompleted(getFisikValue(r))) totalFisikCompleted++;
         }
 
-        // --- 2. Hitung untuk Chart Regional ---
         const rawReg = r['REGIONAL'] || r['REG'];
-        if (!rawReg) return; // Skip if no regional
+        if (!rawReg) return; 
 
         const reg = rawReg.toUpperCase();
-        if (!regStats[reg]) {
-          regStats[reg] = { total: 0, selesaiDof: 0, selesaiFisik: 0 };
-        }
+        if (!regStats[reg]) regStats[reg] = { total: 0, selesaiDof: 0, selesaiFisik: 0 };
         
         regStats[reg].total += 1;
-        
-        if ((r['STATUS DOF'] || '').toUpperCase() === 'SELESAI') {
-          regStats[reg].selesaiDof += 1;
-        }
-
-        if (checkIsCompleted(getFisikValue(r))) {
-          regStats[reg].selesaiFisik += 1;
-        }
+        if ((r['STATUS DOF'] || '').toUpperCase() === 'SELESAI') regStats[reg].selesaiDof += 1;
+        if (checkIsCompleted(getFisikValue(r))) regStats[reg].selesaiFisik += 1;
       });
 
-      // WARNA KUNING untuk menggantikan Ungu (#9334e6)
       const colorYellow = '#f9ab00'; 
-
-      // --- A. Render Chart Regional ---
       const regions = Object.keys(regStats);
       const dataRegTotal = regions.map(k => regStats[k].total);
       const dataRegDof = regions.map(k => regStats[k].selesaiDof);
@@ -386,30 +383,9 @@
         data: {
           labels: regions,
           datasets: [
-            {
-              label: 'Total Data PUD',
-              data: dataRegTotal,
-              backgroundColor: '#0b57d0', // Biru
-              borderRadius: 4,
-              barPercentage: 0.6,
-              categoryPercentage: 0.8
-            },
-            {
-              label: 'Selesai Sistem (DOF)',
-              data: dataRegDof,
-              backgroundColor: '#188038', // Hijau
-              borderRadius: 4,
-              barPercentage: 0.6,
-              categoryPercentage: 0.8
-            },
-            {
-              label: 'Fisik Completed',
-              data: dataRegFisik,
-              backgroundColor: colorYellow, // KUNING
-              borderRadius: 4,
-              barPercentage: 0.6,
-              categoryPercentage: 0.8
-            }
+            { label: 'Total Data PUD', data: dataRegTotal, backgroundColor: '#0b57d0', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
+            { label: 'Selesai Sistem (DOF)', data: dataRegDof, backgroundColor: '#188038', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
+            { label: 'Fisik Completed', data: dataRegFisik, backgroundColor: colorYellow, borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 }
           ]
         },
         options: {
@@ -426,21 +402,16 @@
         }
       });
 
-      // --- B. Render Chart Status (Donat) ---
       const ctxStatus = document.getElementById('chartStatus').getContext('2d');
       if(chartStatusInstance) chartStatusInstance.destroy();
-
-      const donutLabels = ['Data Masuk', 'Selesai DOF', 'Fisik Completed'];
-      const donutData = [totalMasuk, totalDofSelesai, totalFisikCompleted];
-      const donutColors = ['#0b57d0', '#188038', colorYellow]; // Konsisten KUNING
 
       chartStatusInstance = new Chart(ctxStatus, {
         type: 'doughnut',
         data: {
-          labels: donutLabels,
+          labels: ['Data Masuk', 'Selesai DOF', 'Fisik Completed'],
           datasets: [{
-            data: donutData,
-            backgroundColor: donutColors,
+            data: [totalMasuk, totalDofSelesai, totalFisikCompleted],
+            backgroundColor: ['#0b57d0', '#188038', colorYellow],
             borderWidth: 0,
             hoverOffset: 5
           }]
@@ -450,10 +421,7 @@
           maintainAspectRatio: false,
           cutout: '70%',
           plugins: { 
-            legend: { 
-                position: 'right', 
-                labels: { color: textColor, boxWidth: 12, usePointStyle: true, padding: 15 } 
-            } 
+            legend: { position: 'right', labels: { color: textColor, boxWidth: 12, usePointStyle: true, padding: 15 } } 
           }
         }
       });
@@ -462,13 +430,8 @@
     function formatRupiah(num) {
       return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num || 0);
     }
-
-    function updateChartColors() {
-      // Refresh saat ganti tema
-      // Dalam kasus real, data harus di-fetch ulang atau disimpan di variabel global
-      // untuk me-render ulang chart.
-      // Namun karena ini static file demo, kita biarkan user me-refresh page.
-    }
+    
+    function updateChartColors() {} 
   </script>
 </body>
 </html>
