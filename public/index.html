@@ -28,6 +28,9 @@
   <style>
     .loader { border: 3px solid #f3f3f3; border-radius: 50%; border-top: 3px solid #0b57d0; width: 24px; height: 24px; animation: spin 1s linear infinite; }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    /* Tooltip Customization for Bars */
+    .progress-segment:hover { opacity: 0.8; cursor: help; }
   </style>
 </head>
 <body class="bg-[#f0f4f9] dark:bg-[#131314] text-slate-800 dark:text-gray-200 min-h-screen flex flex-col transition-colors duration-300">
@@ -77,6 +80,7 @@
       
       <!-- 5 KEY METRICS -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        
         <!-- 1. Total Nilai -->
         <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
           <div class="absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity">
@@ -87,7 +91,28 @@
                 <span class="material-symbols-rounded text-3xl text-green-600">payments</span>
                 <span class="text-xs md:text-sm font-medium text-gray-500">Total Nilai</span>
             </div>
-            <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2" id="card-nilai">0</p>
+            
+            <p class="text-lg font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2 md:hidden" id="card-nilai-mobile">0</p>
+            <p class="hidden md:block text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2" id="card-nilai-desktop">0</p>
+            
+            <!-- Progress Bar Stacked -->
+            <div class="mt-4">
+               <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                 <span>Progress Pencairan</span>
+                 <span id="pct-nilai">0%</span>
+               </div>
+               <div class="flex w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                 <!-- Green: Sudah Bayar -->
+                 <div id="bar-nilai-bayar" class="bg-green-500 h-full progress-segment" style="width: 0%" title="Lunas"></div>
+                 <!-- Yellow: Fisik Completed (Belum Bayar) -->
+                 <div id="bar-nilai-fisik" class="bg-yellow-400 h-full progress-segment" style="width: 0%" title="Verifikasi"></div>
+               </div>
+               <!-- Legend -->
+               <div class="flex gap-3 mt-2 text-[10px] text-gray-500 dark:text-gray-400 font-medium">
+                  <div class="flex items-center gap-1"><div class="w-2 h-2 bg-green-500 rounded-full"></div> Lunas</div>
+                  <div class="flex items-center gap-1"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> Verifikasi</div>
+               </div>
+            </div>
           </div>
         </div>
 
@@ -102,7 +127,23 @@
                 <span class="text-xs md:text-sm font-medium text-gray-500">Total PUD</span>
             </div>
             <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mt-2" id="card-pud">0</p>
-            <p class="text-[10px] md:text-xs text-gray-400 mt-1">Total Partisipan</p>
+            
+            <!-- Progress Bar Stacked -->
+            <div class="mt-4">
+               <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                 <span>Status Mitra</span>
+                 <span id="pct-pud">0%</span>
+               </div>
+               <div class="flex w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                 <div id="bar-pud-bayar" class="bg-indigo-500 h-full progress-segment" style="width: 0%" title="Selesai"></div>
+                 <div id="bar-pud-fisik" class="bg-yellow-400 h-full progress-segment" style="width: 0%" title="Proses"></div>
+               </div>
+               <!-- Legend -->
+               <div class="flex gap-3 mt-2 text-[10px] text-gray-500 dark:text-gray-400 font-medium">
+                  <div class="flex items-center gap-1"><div class="w-2 h-2 bg-indigo-500 rounded-full"></div> Selesai</div>
+                  <div class="flex items-center gap-1"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> Proses</div>
+               </div>
+            </div>
           </div>
         </div>
 
@@ -117,7 +158,23 @@
                 <span class="text-xs md:text-sm font-medium text-gray-500">Total Kuantum</span>
             </div>
             <p class="text-lg md:text-xl font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2" id="card-kuantum">0</p>
-            <p class="text-[10px] md:text-xs text-gray-400 mt-1">Kilogram</p>
+            
+            <!-- Progress Bar Stacked -->
+            <div class="mt-4">
+               <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                 <span>Status Penyaluran</span>
+                 <span id="pct-kuantum">0%</span>
+               </div>
+               <div class="flex w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                 <div id="bar-kuantum-bayar" class="bg-blue-500 h-full progress-segment" style="width: 0%" title="Terbayar"></div>
+                 <div id="bar-kuantum-fisik" class="bg-yellow-400 h-full progress-segment" style="width: 0%" title="Verifikasi"></div>
+               </div>
+               <!-- Legend -->
+               <div class="flex gap-3 mt-2 text-[10px] text-gray-500 dark:text-gray-400 font-medium">
+                  <div class="flex items-center gap-1"><div class="w-2 h-2 bg-blue-500 rounded-full"></div> Terbayar</div>
+                  <div class="flex items-center gap-1"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> Verifikasi</div>
+               </div>
+            </div>
           </div>
         </div>
 
@@ -132,7 +189,21 @@
                 <span class="text-xs md:text-sm font-medium text-gray-500">Pembayaran</span>
             </div>
             <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mt-2" id="card-bayar">0</p>
-            <p class="text-[10px] md:text-xs text-gray-400 mt-1">Transaksi Selesai</p>
+            
+             <!-- Progress Bar Stacked (Simplified for Count) -->
+            <div class="mt-4">
+               <div class="flex justify-between text-[10px] text-gray-400 mb-1">
+                 <span>PUD Lunas</span>
+                 <span id="pct-bayar">0%</span>
+               </div>
+               <div class="flex w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
+                 <div id="bar-bayar-selesai" class="bg-amber-500 h-full progress-segment" style="width: 0%" title="Transaksi Selesai"></div>
+               </div>
+               <!-- Legend -->
+               <div class="flex gap-3 mt-2 text-[10px] text-gray-500 dark:text-gray-400 font-medium">
+                  <div class="flex items-center gap-1"><div class="w-2 h-2 bg-amber-500 rounded-full"></div> Transaksi Selesai</div>
+               </div>
+            </div>
           </div>
         </div>
       </div>
@@ -309,6 +380,11 @@
         const statDOF = findValueByHeader(row, ['STATUS DOF', 'STATUSDOF']); 
         return String(statDOF || '').toUpperCase().trim() === 'SELESAI';
     }
+    
+    function checkStatusBayar(row) {
+        const val = findValueByHeader(row, ['STATUS PEMBAYARAN', 'BAYAR']);
+        return String(val || '').toUpperCase().includes('SUDAH');
+    }
 
     function parseIndonesianNumber(val) {
         if (!val) return 0;
@@ -339,23 +415,116 @@
 
       const summary = data.summary;
       
-      // Calculate Total Cards using "Permintaan" Column
+      // Init Variables for KPI & Bars
       let totalNilaiReal = 0;
+      let totalNilaiBayar = 0;
+      let totalNilaiFisik = 0; // Completed but not paid
+
       let totalKuantumReal = 0;
+      let totalKuantumBayar = 0;
+      let totalKuantumFisik = 0;
+
+      let totalPudCount = 0;
+      let totalPudBayarCount = 0;
+      let totalPudFisikCount = 0;
+
       
       data.data.forEach(r => {
-          totalNilaiReal += parseIndonesianNumber(getColPermintaan(r, 'nilai'));
-          totalKuantumReal += parseIndonesianNumber(getColPermintaan(r, 'kuantum'));
+          // Parse Basic
+          const nilai = parseIndonesianNumber(getColPermintaan(r, 'nilai'));
+          const kuantum = parseIndonesianNumber(getColPermintaan(r, 'kuantum'));
+          const isPud = findValueByHeader(r, ['PUD', 'NAMA CV']);
+          
+          // Check Status
+          const isBayar = checkStatusBayar(r);
+          const isFisikCompleted = checkIsCompleted(r);
+
+          // Sum Total
+          totalNilaiReal += nilai;
+          totalKuantumReal += kuantum;
+          if(isPud) totalPudCount++;
+
+          // Sum Segment: Bayar (Prioritas 1)
+          if (isBayar) {
+             totalNilaiBayar += nilai;
+             totalKuantumBayar += kuantum;
+             if(isPud) totalPudBayarCount++;
+          } 
+          // Sum Segment: Fisik Completed tapi Belum Bayar (Prioritas 2)
+          else if (isFisikCompleted) {
+             totalNilaiFisik += nilai;
+             totalKuantumFisik += kuantum;
+             if(isPud) totalPudFisikCount++;
+          }
       });
 
-      document.getElementById('card-nilai').textContent = formatRupiah(totalNilaiReal);
+      // 1. Render Numbers
+      document.getElementById('card-nilai-mobile').textContent = formatCompactForCard(totalNilaiReal);
+      document.getElementById('card-nilai-desktop').textContent = formatRupiah(totalNilaiReal);
       document.getElementById('card-kuantum').textContent = totalKuantumReal.toLocaleString('id-ID');
-      document.getElementById('card-bayar').textContent = summary.sudahBayar;
-      document.getElementById('card-pud').textContent = summary.totalUniquePUD;
+      document.getElementById('card-bayar').textContent = summary.sudahBayar; // Or user totalPudBayarCount
+      document.getElementById('card-pud').textContent = summary.totalUniquePUD; // Or user totalPudCount
+
+      // 2. Render Progress Bars with Tooltips
+      
+      // Bar Helper to set Width & Tooltip Title
+      const setBar = (idBayar, idFisik, idPct, total, valBayar, valFisik, type) => {
+          if (total === 0) return;
+          const pctBayar = (valBayar / total) * 100;
+          const pctFisik = (valFisik / total) * 100;
+          
+          const elBayar = document.getElementById(idBayar);
+          elBayar.style.width = `${pctBayar}%`;
+          
+          // Set Tooltip Text
+          let bayarText = type === 'money' ? formatCompactForCard(valBayar) : valBayar.toLocaleString('id-ID');
+          let fisikText = type === 'money' ? formatCompactForCard(valFisik) : valFisik.toLocaleString('id-ID');
+          
+          elBayar.title = `Lunas/Selesai: ${bayarText} (${Math.round(pctBayar)}%)`;
+
+          if(idFisik) {
+              const elFisik = document.getElementById(idFisik);
+              elFisik.style.width = `${pctFisik}%`;
+              elFisik.title = `Verifikasi: ${fisikText} (${Math.round(pctFisik)}%)`;
+          }
+          
+          // Label shows Paid %
+          document.getElementById(idPct).textContent = `${Math.round(pctBayar)}%`;
+      };
+
+      // Bar Nilai
+      setBar('bar-nilai-bayar', 'bar-nilai-fisik', 'pct-nilai', totalNilaiReal, totalNilaiBayar, totalNilaiFisik, 'money');
+
+      // Bar PUD
+      const basePud = summary.totalUniquePUD || totalPudCount;
+      setBar('bar-pud-bayar', 'bar-pud-fisik', 'pct-pud', basePud, totalPudBayarCount, totalPudFisikCount, 'number');
+
+      // Bar Kuantum
+      setBar('bar-kuantum-bayar', 'bar-kuantum-fisik', 'pct-kuantum', totalKuantumReal, totalKuantumBayar, totalKuantumFisik, 'number');
+
+      // Bar Pembayaran
+      const pctBayarOnly = basePud > 0 ? (summary.sudahBayar / basePud) * 100 : 0;
+      const elBayarSelesai = document.getElementById('bar-bayar-selesai');
+      elBayarSelesai.style.width = `${pctBayarOnly}%`;
+      elBayarSelesai.title = `Sudah Bayar: ${summary.sudahBayar} PUD`;
+      document.getElementById('pct-bayar').textContent = `${Math.round(pctBayarOnly)}%`;
+
 
       updateRegionalChart();
       renderStatusChart(data.data);
       renderTable(data.data);
+    }
+
+    // --- FORMATTER FOR CARD (Mobile Specific) ---
+    function formatCompactForCard(value) {
+        // Triliun
+        if (value >= 1e12) return (value / 1e12).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' T';
+        // Miliar
+        if (value >= 1e9) return (value / 1e9).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' M';
+        // Juta
+        if (value >= 1e6) return (value / 1e6).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' Jt';
+        
+        return formatRupiah(value);
     }
 
     // --- FORMATTER FOR CHART NUMBERS ---
