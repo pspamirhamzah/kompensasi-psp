@@ -69,12 +69,14 @@
 
     <!-- KANAN: Filter & Tema -->
     <div class="flex items-center gap-2">
-        <!-- FILTER TAHAP (Moved Here) -->
+        <!-- THEME TOGGLE (Dipindah ke Kiri) -->
+        <button onclick="toggleTheme()" class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0">
+          <span id="themeIcon" class="material-symbols-rounded text-lg">dark_mode</span>
+        </button>
+
+        <!-- FILTER TAHAP (Tanpa Icon Filter, Paling Kanan) -->
         <div class="relative">
-             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2 text-gray-500">
-                <span class="material-symbols-rounded text-sm">filter_alt</span>
-             </div>
-             <select id="tahapFilter" onchange="handleTahapChange()" class="appearance-none bg-gray-100 dark:bg-gray-800 border border-transparent dark:border-gray-700 text-gray-700 dark:text-gray-300 py-1.5 pl-8 pr-8 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-shadow hover:bg-gray-200 dark:hover:bg-gray-700 w-32 sm:w-40 truncate">
+             <select id="tahapFilter" onchange="handleTahapChange()" class="appearance-none bg-gray-100 dark:bg-gray-800 border border-transparent dark:border-gray-700 text-gray-700 dark:text-gray-300 py-1.5 pl-3 pr-8 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-shadow hover:bg-gray-200 dark:hover:bg-gray-700 w-32 sm:w-40 truncate">
                 <option value="ALL">Semua Tahap</option>
                 <!-- Options injected by JS -->
              </select>
@@ -82,11 +84,6 @@
                 <span class="material-symbols-rounded text-sm">expand_more</span>
              </div>
         </div>
-
-        <!-- THEME TOGGLE -->
-        <button onclick="toggleTheme()" class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0">
-          <span id="themeIcon" class="material-symbols-rounded text-lg">dark_mode</span>
-        </button>
     </div>
   </nav>
 
