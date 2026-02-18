@@ -10,8 +10,8 @@
   <meta property="og:description" content="Monitoring per Regional & Progress">
   <meta property="og:image" content="https://raw.githubusercontent.com/pspamirhamzah/kompensasi-psp/main/public/thumbnail.jpg">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://github.com/pspamirhamzah/kompensasi-psp">
-  
+  <meta property="og:url" content="https://github.com/pspamirhamzah/kompensasi-psp">  
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
@@ -47,43 +47,60 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywKScoceeAiCiAIiT_L8xHP-8KcdLI8pJpVAEhFrJbg8bqNBGkC-MwAcNhHSiQPk2BoQ/exec'; 
   </script>
 
-  <!-- NAVBAR -->
-  <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex justify-between items-center">
-    <div class="flex items-center gap-4">
-      <!-- LOGO AREA -->
+  <!-- NAVBAR (Ukuran Dikecilkan ~75% & Filter Ditambahkan) -->
+  <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 py-2 flex justify-between items-center gap-2">
+    <!-- KIRI: Logo & Judul -->
+    <div class="flex items-center gap-3 shrink-0">
       <img 
         src="logo_pusri.png" 
         alt="Logo Pusri" 
-        class="h-14 w-auto object-contain"
+        class="h-8 w-auto object-contain"
         onerror="this.style.display='none'; document.getElementById('fallback-icon').classList.remove('hidden');"
       >
-      
-      <!-- Fallback Icon -->
-      <div id="fallback-icon" class="hidden p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-300">
-        <span class="material-symbols-rounded text-2xl">account_balance_wallet</span>
+      <div id="fallback-icon" class="hidden p-1 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-300">
+        <span class="material-symbols-rounded text-lg">account_balance_wallet</span>
       </div>
-      
       <div>
-        <h1 class="text-xl font-bold tracking-tight">Kompensasi HET - PSP</h1>
-        <p class="text-xs text-gray-500 dark:text-gray-400">Monitoring Regional & Progress</p>
+        <h1 class="text-sm font-bold tracking-tight hidden sm:block">Kompensasi HET - PSP</h1>
+        <h1 class="text-sm font-bold tracking-tight sm:hidden">HET - PSP</h1>
+        <p class="text-[10px] text-gray-500 dark:text-gray-400 hidden sm:block">Monitoring Regional & Progress</p>
       </div>
     </div>
-    <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-      <span id="themeIcon" class="material-symbols-rounded">dark_mode</span>
-    </button>
+
+    <!-- KANAN: Filter & Tema -->
+    <div class="flex items-center gap-2">
+        <!-- FILTER TAHAP (Moved Here) -->
+        <div class="relative">
+             <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-2 text-gray-500">
+                <span class="material-symbols-rounded text-sm">filter_alt</span>
+             </div>
+             <select id="tahapFilter" onchange="handleTahapChange()" class="appearance-none bg-gray-100 dark:bg-gray-800 border border-transparent dark:border-gray-700 text-gray-700 dark:text-gray-300 py-1.5 pl-8 pr-8 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-shadow hover:bg-gray-200 dark:hover:bg-gray-700 w-32 sm:w-40 truncate">
+                <option value="ALL">Semua Tahap</option>
+                <!-- Options injected by JS -->
+             </select>
+             <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2 text-gray-500">
+                <span class="material-symbols-rounded text-sm">expand_more</span>
+             </div>
+        </div>
+
+        <!-- THEME TOGGLE -->
+        <button onclick="toggleTheme()" class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0">
+          <span id="themeIcon" class="material-symbols-rounded text-lg">dark_mode</span>
+        </button>
+    </div>
   </nav>
 
   <!-- CONTENT -->
-  <main class="flex-grow container mx-auto p-4 md:p-6 max-w-7xl space-y-6">
+  <main class="flex-grow container mx-auto p-4 md:p-6 max-w-7xl flex flex-col">
     
-    <!-- LOADING & ERROR -->
-    <div id="loading" class="flex flex-col justify-center items-center py-20 gap-3">
+    <!-- LOADING & ERROR (Posisi Tengah Vertikal & Horizontal) -->
+    <div id="loading" class="flex-grow flex flex-col justify-center items-center min-h-[80vh] gap-3">
       <div class="loader"></div>
-      <p class="text-sm text-gray-500">Mengambil data dari Google Sheet...</p>
+      <p class="text-sm text-gray-500 animate-pulse">Iwak Sepat Iwak Gabus....</p>
     </div>
-    <div id="errorMsg" class="hidden bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-6 rounded-xl text-center border border-red-200 dark:border-red-800"></div>
+    <div id="errorMsg" class="hidden bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 p-6 rounded-xl text-center border border-red-200 dark:border-red-800 my-auto"></div>
 
-    <div id="dashboardContent" class="hidden space-y-6">
+    <div id="dashboardContent" class="hidden space-y-6 mt-4">
       
       <!-- 5 KEY METRICS -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
@@ -271,6 +288,7 @@
               <tr>
                 <th class="px-6 py-4">REG</th>
                 <th class="px-6 py-4">PUD</th>
+                <th class="px-6 py-4 text-center">Tahap</th>
                 <th class="px-6 py-4 text-center">Dok. Fisik</th>
                 <th class="px-6 py-4">DOF</th>
                 <th class="px-6 py-4 text-right">Nilai Rupiah</th>
@@ -305,6 +323,7 @@
 
     // --- LOGIC ---
     let allTableRows = []; 
+    let filteredRows = []; // Store filtered data globally
     let chartRegionalInstance, chartStatusInstance;
 
     window.onload = function() {
@@ -334,7 +353,13 @@
         if(json.status === 'success') {
            allTableRows = json.data; 
            console.log("Detected Columns:", Object.keys(allTableRows[0] || {}));
-           renderDashboard(json);
+           
+           // Init Dashboard
+           populateTahapFilter(allTableRows);
+           handleTahapChange(); // This triggers dashboard update
+           
+           document.getElementById('loading').classList.add('hidden');
+           document.getElementById('dashboardContent').classList.remove('hidden');
         } else {
            throw new Error(json.message || "Kesalahan server.");
         }
@@ -378,6 +403,11 @@
         return findValueByHeader(row, ['REGIONAL', 'REG', 'WILAYAH']) || 'LAINNYA';
     }
 
+    function getTahap(row) {
+        // Find Column for Tahap (usually W, searching for keywords)
+        return findValueByHeader(row, ['TAHAP', 'TAHAP PENYALURAN', 'BATCH', 'PERIODE']) || '-';
+    }
+
     function checkIsCompleted(row) {
         const val = findValueByHeader(row, ['DOKUMEN FISIK', 'STATUS DOKUMEN', 'FISIK']);
         return String(val || '').toUpperCase().includes('COMPLETED');
@@ -407,25 +437,56 @@
         return parseFloat(str) || 0;
     }
 
+    // --- FILTER TAHAP LOGIC ---
+    function populateTahapFilter(rows) {
+        const tahapSet = new Set();
+        rows.forEach(r => {
+            const t = getTahap(r);
+            if(t && t !== '-' && t !== '') tahapSet.add(t);
+        });
+
+        // Sort naturally (Tahap 1, Tahap 2, etc)
+        const sortedTahap = Array.from(tahapSet).sort((a, b) => {
+             return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
+        });
+
+        const selectEl = document.getElementById('tahapFilter');
+        sortedTahap.forEach(t => {
+            const opt = document.createElement('option');
+            opt.value = t;
+            opt.textContent = t;
+            selectEl.appendChild(opt);
+        });
+    }
+
+    function handleTahapChange() {
+        const selectedTahap = document.getElementById('tahapFilter').value;
+        
+        if (selectedTahap === 'ALL') {
+            filteredRows = allTableRows;
+        } else {
+            filteredRows = allTableRows.filter(r => getTahap(r) === selectedTahap);
+        }
+
+        updateDashboard(filteredRows);
+    }
+
     // --- SEARCH ---
     function handleSearch(keyword) {
-        const filtered = allTableRows.filter(row => {
+        // Search applies within the current Filtered Rows (Tahap)
+        const searchResults = filteredRows.filter(row => {
             const pudName = (findValueByHeader(row, ['PUD', 'NAMA CV', 'MITRA']) || '').toLowerCase();
             return pudName.includes(keyword.toLowerCase());
         });
-        renderTable(filtered);
+        renderTable(searchResults);
     }
 
-    function renderDashboard(data) {
-      document.getElementById('loading').classList.add('hidden');
-      document.getElementById('dashboardContent').classList.remove('hidden');
-
-      const summary = data.summary;
-      
-      // Init Variables for KPI & Bars
+    // --- CORE UPDATE FUNCTION ---
+    function updateDashboard(rows) {
+      // 1. Recalculate Summary Stats based on Filtered Rows
       let totalNilaiReal = 0;
       let totalNilaiBayar = 0;
-      let totalNilaiFisik = 0; // Completed but not paid
+      let totalNilaiFisik = 0; 
 
       let totalKuantumReal = 0;
       let totalKuantumBayar = 0;
@@ -434,30 +495,35 @@
       let totalPudCount = 0;
       let totalPudBayarCount = 0;
       let totalPudFisikCount = 0;
-
       
-      data.data.forEach(r => {
-          // Parse Basic
+      // Used for unique PUD counting
+      const uniquePuds = new Set();
+      const uniquePudsBayar = new Set();
+
+      rows.forEach(r => {
           const nilai = parseIndonesianNumber(getColPermintaan(r, 'nilai'));
           const kuantum = parseIndonesianNumber(getColPermintaan(r, 'kuantum'));
-          const isPud = findValueByHeader(r, ['PUD', 'NAMA CV']);
+          const pudName = findValueByHeader(r, ['PUD', 'NAMA CV']);
+          const isPud = !!pudName;
           
-          // Check Status
+          if(isPud) uniquePuds.add(pudName);
+
           const isBayar = checkStatusBayar(r);
           const isFisikCompleted = checkIsCompleted(r);
 
           // Sum Total
           totalNilaiReal += nilai;
           totalKuantumReal += kuantum;
-          if(isPud) totalPudCount++;
+          if(isPud) totalPudCount++; // Note: this is row count for logic simplicity in bars, or use uniquePuds.size for Display
 
-          // Sum Segment: Bayar (Prioritas 1)
           if (isBayar) {
              totalNilaiBayar += nilai;
              totalKuantumBayar += kuantum;
-             if(isPud) totalPudBayarCount++;
+             if(isPud) {
+                 totalPudBayarCount++;
+                 uniquePudsBayar.add(pudName);
+             }
           } 
-          // Sum Segment: Fisik Completed tapi Belum Bayar (Prioritas 2)
           else if (isFisikCompleted) {
              totalNilaiFisik += nilai;
              totalKuantumFisik += kuantum;
@@ -465,25 +531,31 @@
           }
       });
 
-      // 1. Render Numbers
+      // 2. Render Numbers
       document.getElementById('card-nilai-mobile').textContent = formatCompactForCard(totalNilaiReal);
       document.getElementById('card-nilai-desktop').textContent = formatRupiah(totalNilaiReal);
       document.getElementById('card-kuantum').textContent = totalKuantumReal.toLocaleString('id-ID');
-      document.getElementById('card-bayar').textContent = summary.sudahBayar; // Or user totalPudBayarCount
-      document.getElementById('card-pud').textContent = summary.totalUniquePUD; // Or user totalPudCount
-
-      // 2. Render Progress Bars with Tooltips
       
-      // Bar Helper to set Width & Tooltip Title
+      // Update Bayar Card with actual filtered count
+      document.getElementById('card-bayar').textContent = uniquePudsBayar.size; // Showing Unique PUDs paid
+      document.getElementById('card-pud').textContent = uniquePuds.size; // Showing Unique PUDs total
+
+      // 3. Render Progress Bars
+      
+      // Helper
       const setBar = (idBayar, idFisik, idPct, total, valBayar, valFisik, type) => {
-          if (total === 0) return;
+          if (total === 0) {
+              document.getElementById(idBayar).style.width = `0%`;
+              if(idFisik) document.getElementById(idFisik).style.width = `0%`;
+              document.getElementById(idPct).textContent = `0%`;
+              return;
+          }
           const pctBayar = (valBayar / total) * 100;
           const pctFisik = (valFisik / total) * 100;
           
           const elBayar = document.getElementById(idBayar);
           elBayar.style.width = `${pctBayar}%`;
           
-          // Set Tooltip Text
           let bayarText = type === 'money' ? formatCompactForCard(valBayar) : valBayar.toLocaleString('id-ID');
           let fisikText = type === 'money' ? formatCompactForCard(valFisik) : valFisik.toLocaleString('id-ID');
           
@@ -495,31 +567,31 @@
               elFisik.title = `Verifikasi: ${fisikText} (${Math.round(pctFisik)}%)`;
           }
           
-          // Label shows Paid %
           document.getElementById(idPct).textContent = `${Math.round(pctBayar)}%`;
       };
 
       // Bar Nilai
       setBar('bar-nilai-bayar', 'bar-nilai-fisik', 'pct-nilai', totalNilaiReal, totalNilaiBayar, totalNilaiFisik, 'money');
 
-      // Bar PUD
-      const basePud = summary.totalUniquePUD || totalPudCount;
-      setBar('bar-pud-bayar', 'bar-pud-fisik', 'pct-pud', basePud, totalPudBayarCount, totalPudFisikCount, 'number');
+      // Bar PUD (Row based for bar accuracy)
+      setBar('bar-pud-bayar', 'bar-pud-fisik', 'pct-pud', totalPudCount, totalPudBayarCount, totalPudFisikCount, 'number');
 
       // Bar Kuantum
       setBar('bar-kuantum-bayar', 'bar-kuantum-fisik', 'pct-kuantum', totalKuantumReal, totalKuantumBayar, totalKuantumFisik, 'number');
 
       // Bar Pembayaran
-      const pctBayarOnly = basePud > 0 ? (summary.sudahBayar / basePud) * 100 : 0;
+      const totalUnique = uniquePuds.size;
+      const totalPaidUnique = uniquePudsBayar.size;
+      const pctBayarOnly = totalUnique > 0 ? (totalPaidUnique / totalUnique) * 100 : 0;
       const elBayarSelesai = document.getElementById('bar-bayar-selesai');
       elBayarSelesai.style.width = `${pctBayarOnly}%`;
-      elBayarSelesai.title = `Sudah Bayar: ${summary.sudahBayar} PUD`;
+      elBayarSelesai.title = `Sudah Bayar: ${totalPaidUnique} PUD`;
       document.getElementById('pct-bayar').textContent = `${Math.round(pctBayarOnly)}%`;
 
-
-      updateRegionalChart();
-      renderStatusChart(data.data);
-      renderTable(data.data);
+      // 4. Update Charts & Table using the FILTERED rows
+      updateRegionalChart(rows);
+      renderStatusChart(rows);
+      renderTable(rows);
     }
 
     // --- FORMATTER FOR CARD (Mobile Specific) ---
@@ -553,9 +625,11 @@
     }
 
     // --- CHART LOGIC UPDATED ---
-    function updateRegionalChart() {
+    function updateRegionalChart(rowsToUse) {
+      // Use passed rows OR default to filteredRows if called from dropdown
+      const rows = rowsToUse || filteredRows;
       const metric = document.getElementById('chartMetricSelect').value; 
-      renderRegionalChart(allTableRows, metric);
+      renderRegionalChart(rows, metric);
     }
 
     function renderRegionalChart(rows, metric) {
@@ -631,7 +705,6 @@
                 intersect: false,
                 callbacks: {
                     label: function(context) {
-                        // Gunakan format compact di tooltip juga agar rapi
                         return context.dataset.label + ': ' + formatCompactNumber(context.raw, metric);
                     }
                 }
@@ -643,9 +716,8 @@
                 grid: { color: gridColor }, 
                 ticks: { 
                     color: textColor,
-                    maxTicksLimit: 6, // Added Max Ticks Limit here
+                    maxTicksLimit: 6, 
                     callback: function(value) {
-                        // Format Sumbu Y menjadi ringkas (M, Jt, Ton)
                         return formatCompactNumber(value, metric);
                     }
                 } 
@@ -703,7 +775,7 @@
       const rowsToShow = rows.slice(0, 10);
 
       if(rowsToShow.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-gray-400">Data tidak ditemukan</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-gray-400">Data tidak ditemukan untuk filter ini</td></tr>`;
         return;
       }
       
@@ -721,6 +793,7 @@
 
         const statusDof = findValueByHeader(row, ['STATUS DOF']) || '-';
         const regional = getRegional(row);
+        const tahap = getTahap(row);
         const pudName = findValueByHeader(row, ['PUD', 'NAMA CV']);
         const valRupiah = parseIndonesianNumber(getColPermintaan(row, 'nilai'));
 
@@ -728,6 +801,7 @@
           <tr class="hover:bg-gray-50 dark:hover:bg-[#252628] transition-colors">
             <td class="px-6 py-4 font-bold text-gray-500">${regional}</td>
             <td class="px-6 py-4 font-medium">${pudName || '-'}</td>
+            <td class="px-6 py-4 text-center text-xs text-gray-500 bg-gray-50 dark:bg-white/5 rounded-lg">${tahap}</td>
             <td class="px-6 py-4 text-center">
               <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badgeColorFisik} border border-transparent uppercase tracking-wide truncate max-w-[80px] block mx-auto" title="${statusFisikDisplay}">${statusFisikDisplay}</span>
             </td>
