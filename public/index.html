@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard Kompensasi HET</title>
+  <title>Dashboard Kompensasi HET - Regional & Fisik</title>
   
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -41,11 +41,11 @@
   <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex justify-between items-center">
     <div class="flex items-center gap-3">
       <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-300">
-        <span class="material-symbols-rounded text-2xl">account_balance_wallet</span>
+        <span class="material-symbols-rounded text-2xl">monitoring</span>
       </div>
       <div>
         <h1 class="text-xl font-bold tracking-tight">Kompensasi HET</h1>
-        <p class="text-xs text-gray-500 dark:text-gray-400">Monitoring Progress & Keuangan</p>
+        <p class="text-xs text-gray-500 dark:text-gray-400">Monitoring Regional & Progress</p>
       </div>
     </div>
     <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
@@ -65,66 +65,66 @@
 
     <div id="dashboardContent" class="hidden space-y-6">
       
-      <!-- 5 KEY METRICS (Responsive Grid) -->
-      <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <!-- 5 KEY METRICS -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         <!-- 1. Total Nilai -->
-        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm col-span-1 md:col-span-2 lg:col-span-2">
-          <div class="flex items-center gap-3 mb-2">
+        <div class="bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+          <div class="flex items-center gap-2 md:gap-3 mb-2">
             <span class="material-symbols-rounded text-green-600 bg-green-100 p-1.5 rounded-lg text-lg">payments</span>
-            <span class="text-sm font-medium text-gray-500">Total Nilai Permintaan</span>
+            <span class="text-xs md:text-sm font-medium text-gray-500">Total Nilai</span>
           </div>
-          <p class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate" id="card-nilai">0</p>
+          <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate" id="card-nilai">0</p>
         </div>
 
         <!-- 2. Total PUD (Mitra) -->
-        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
-          <div class="flex items-center gap-3 mb-2">
+        <div class="bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+          <div class="flex items-center gap-2 md:gap-3 mb-2">
             <span class="material-symbols-rounded text-indigo-600 bg-indigo-100 p-1.5 rounded-lg text-lg">store</span>
-            <span class="text-sm font-medium text-gray-500">Total PUD (Mitra)</span>
+            <span class="text-xs md:text-sm font-medium text-gray-500">Mitra (PUD)</span>
           </div>
-          <p class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white" id="card-pud">0</p>
-          <p class="text-xs text-gray-400 mt-1">Mitra Berpartisipasi</p>
+          <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white" id="card-pud">0</p>
+          <p class="text-[10px] md:text-xs text-gray-400 mt-1">Total Partisipan</p>
         </div>
 
         <!-- 3. Total Kuantum -->
-        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
-          <div class="flex items-center gap-3 mb-2">
+        <div class="bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+          <div class="flex items-center gap-2 md:gap-3 mb-2">
             <span class="material-symbols-rounded text-blue-600 bg-blue-100 p-1.5 rounded-lg text-lg">scale</span>
-            <span class="text-sm font-medium text-gray-500">Total Kuantum</span>
+            <span class="text-xs md:text-sm font-medium text-gray-500">Total Kuantum</span>
           </div>
-          <p class="text-xl font-bold tracking-tight text-gray-900 dark:text-white truncate" id="card-kuantum">0</p>
-          <p class="text-xs text-gray-400 mt-1">Kilogram</p>
+          <p class="text-lg md:text-xl font-bold tracking-tight text-gray-900 dark:text-white truncate" id="card-kuantum">0</p>
+          <p class="text-[10px] md:text-xs text-gray-400 mt-1">Kilogram</p>
         </div>
 
         <!-- 4. Status Pembayaran -->
-        <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
-          <div class="flex items-center gap-3 mb-2">
+        <div class="bg-white dark:bg-[#1e1f20] p-4 md:p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm">
+          <div class="flex items-center gap-2 md:gap-3 mb-2">
             <span class="material-symbols-rounded text-purple-600 bg-purple-100 p-1.5 rounded-lg text-lg">verified</span>
-            <span class="text-sm font-medium text-gray-500">Sudah Dibayar</span>
+            <span class="text-xs md:text-sm font-medium text-gray-500">Lunas/Bayar</span>
           </div>
-          <p class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white" id="card-bayar">0</p>
-          <p class="text-xs text-gray-400 mt-1">Transaksi Selesai</p>
+          <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white" id="card-bayar">0</p>
+          <p class="text-[10px] md:text-xs text-gray-400 mt-1">Transaksi Selesai</p>
         </div>
       </div>
 
       <!-- CHARTS AREA -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Chart: Drafter Performance -->
+        <!-- Chart: Regional Performance -->
         <div class="lg:col-span-2 bg-white dark:bg-[#1e1f20] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
           <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
-            <span class="material-symbols-rounded text-gray-400">bar_chart</span>
-            Kinerja Drafter (Berdasarkan Nilai Permintaan)
+            <span class="material-symbols-rounded text-gray-400">map</span>
+            Progress Regional (System vs Fisik)
           </h3>
           <div class="h-72 w-full">
-            <canvas id="chartDrafter"></canvas>
+            <canvas id="chartRegional"></canvas>
           </div>
         </div>
 
-        <!-- Chart: Status Proses DOF -->
+        <!-- Chart: Status Progress (Donat) -->
         <div class="bg-white dark:bg-[#1e1f20] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
           <h3 class="text-lg font-semibold mb-6 flex items-center gap-2">
             <span class="material-symbols-rounded text-gray-400">pie_chart</span>
-            Status Proses (DOF)
+            Ringkasan Progress
           </h3>
           <div class="h-64 w-full flex justify-center">
             <canvas id="chartStatus"></canvas>
@@ -141,9 +141,10 @@
           <table class="w-full text-left text-sm">
             <thead class="bg-gray-50 dark:bg-[#252628] text-gray-500 uppercase font-medium">
               <tr>
+                <th class="px-6 py-4">Regional</th>
                 <th class="px-6 py-4">PUD (Nama CV)</th>
+                <th class="px-6 py-4 text-center">Dok. Fisik</th>
                 <th class="px-6 py-4">Status DOF</th>
-                <th class="px-6 py-4">Drafter</th>
                 <th class="px-6 py-4 text-right">Nilai Permintaan</th>
                 <th class="px-6 py-4 text-center">Status Bayar</th>
               </tr>
@@ -196,6 +197,24 @@
       }
     }
 
+    // --- HELPER FUNCTIONS ---
+    
+    function checkIsCompleted(val) {
+      if(!val) return false;
+      const v = String(val).toUpperCase();
+      return v.includes('COMPLETED');
+    }
+
+    function getFisikValue(row) {
+      return row['STATUS FISIK'] || 
+             row['DOKUMEN FISIK'] || 
+             row['FISIK'] || 
+             row['STATUS DOKUMEN'] || 
+             row['STATUS_FISIK'] || 
+             row['DOC_FISIK'] ||
+             '';
+    }
+
     function renderDashboard(data) {
       document.getElementById('loading').classList.add('hidden');
       document.getElementById('dashboardContent').classList.remove('hidden');
@@ -207,7 +226,7 @@
       document.getElementById('card-nilai').textContent = formatRupiah(summary.totalNilai);
       document.getElementById('card-kuantum').textContent = summary.totalKuantum.toLocaleString('id-ID');
       document.getElementById('card-bayar').textContent = summary.sudahBayar;
-      document.getElementById('card-pud').textContent = summary.totalUniquePUD; // DATA BARU
+      document.getElementById('card-pud').textContent = summary.totalUniquePUD;
 
       // 2. Render Charts
       renderCharts(rows, summary.statusDof);
@@ -218,20 +237,34 @@
       
       rows.slice(0, 10).forEach(row => {
         const statusBayar = row['STATUS PEMBAYARAN'] || 'BELUM';
-        const badgeColor = statusBayar.toUpperCase().includes('SUDAH') 
+        const badgeColorBayar = statusBayar.toUpperCase().includes('SUDAH') 
           ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
           : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300';
         
+        const rawFisik = getFisikValue(row);
+        const isCompleted = checkIsCompleted(rawFisik);
+        const statusFisikDisplay = rawFisik || '-';
+
+        const badgeColorFisik = isCompleted
+          ? 'text-purple-700 bg-purple-100 dark:text-purple-300 dark:bg-purple-900/30'
+          : 'text-gray-500 bg-gray-100 dark:text-gray-400 dark:bg-gray-800';
+
         const statusDof = row['STATUS DOF'] || '-';
+        const regional = row['REGIONAL'] || row['REG'] || '-';
 
         tableHtml += `
           <tr class="hover:bg-gray-50 dark:hover:bg-[#252628] transition-colors">
+            <td class="px-6 py-4 font-bold text-gray-500">${regional}</td>
             <td class="px-6 py-4 font-medium">${row['PUD'] || '-'}</td>
-            <td class="px-6 py-4 text-gray-500">${statusDof}</td>
-            <td class="px-6 py-4">${row['DRAFTER'] || '-'}</td>
+            <td class="px-6 py-4 text-center">
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badgeColorFisik} border border-transparent uppercase tracking-wide truncate max-w-[80px] block mx-auto" title="${statusFisikDisplay}">
+                ${statusFisikDisplay}
+              </span>
+            </td>
+            <td class="px-6 py-4 text-gray-500 text-xs">${statusDof}</td>
             <td class="px-6 py-4 text-right font-mono">${formatRupiah(row['NILAI PERMINTAAN'])}</td>
             <td class="px-6 py-4 text-center">
-              <span class="text-xs font-semibold px-2 py-1 rounded-full ${badgeColor}">${statusBayar}</span>
+              <span class="text-[10px] font-bold px-2 py-1 rounded-full ${badgeColorBayar} uppercase">${statusBayar}</span>
             </td>
           </tr>
         `;
@@ -239,68 +272,139 @@
       tableBody.innerHTML = tableHtml;
     }
 
-    let chartDrafterInstance, chartStatusInstance;
+    let chartRegionalInstance, chartStatusInstance;
 
     function renderCharts(rows, statusDofData) {
       const isDark = htmlEl.classList.contains('dark');
+      const textColor = isDark ? '#e3e3e3' : '#475569';
+      const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
       
-      // A. Drafter Performance
-      const drafterStats = {};
+      // --- LOGIKA DATA ---
+      const regStats = {};
+      let totalMasuk = 0;
+      let totalDofSelesai = 0;
+      let totalFisikCompleted = 0;
+      
       rows.forEach(r => {
-        const name = r['DRAFTER'] || 'Unknown';
-        const val = Number(r['NILAI PERMINTAAN']) || 0;
-        drafterStats[name] = (drafterStats[name] || 0) + val;
+        // --- 1. Hitung untuk Chart Donat (Progress Keseluruhan) ---
+        // Jika ada nama PUD, anggap sebagai data masuk
+        if (r['PUD']) {
+            totalMasuk++;
+            
+            const statusDof = (r['STATUS DOF'] || '').toUpperCase();
+            if (statusDof === 'SELESAI') {
+                totalDofSelesai++;
+            }
+
+            const rawFisik = getFisikValue(r);
+            if (checkIsCompleted(rawFisik)) {
+                totalFisikCompleted++;
+            }
+        }
+
+        // --- 2. Hitung untuk Chart Regional ---
+        const rawReg = r['REGIONAL'] || r['REG'];
+        if (!rawReg) return; // Skip if no regional
+
+        const reg = rawReg.toUpperCase();
+        if (!regStats[reg]) {
+          regStats[reg] = { total: 0, selesaiDof: 0, selesaiFisik: 0 };
+        }
+        
+        regStats[reg].total += 1;
+        
+        if ((r['STATUS DOF'] || '').toUpperCase() === 'SELESAI') {
+          regStats[reg].selesaiDof += 1;
+        }
+
+        if (checkIsCompleted(getFisikValue(r))) {
+          regStats[reg].selesaiFisik += 1;
+        }
       });
+
+      // --- A. Render Chart Regional ---
+      const regions = Object.keys(regStats);
+      const dataRegTotal = regions.map(k => regStats[k].total);
+      const dataRegDof = regions.map(k => regStats[k].selesaiDof);
+      const dataRegFisik = regions.map(k => regStats[k].selesaiFisik);
+
+      const ctxRegional = document.getElementById('chartRegional').getContext('2d');
+      if(chartRegionalInstance) chartRegionalInstance.destroy();
       
-      const ctxDrafter = document.getElementById('chartDrafter').getContext('2d');
-      if(chartDrafterInstance) chartDrafterInstance.destroy();
-      
-      chartDrafterInstance = new Chart(ctxDrafter, {
+      chartRegionalInstance = new Chart(ctxRegional, {
         type: 'bar',
         data: {
-          labels: Object.keys(drafterStats),
-          datasets: [{
-            label: 'Total Nilai (Rp)',
-            data: Object.values(drafterStats),
-            backgroundColor: '#0b57d0',
-            borderRadius: 6,
-          }]
+          labels: regions,
+          datasets: [
+            {
+              label: 'Total Data PUD',
+              data: dataRegTotal,
+              backgroundColor: '#0b57d0', // Biru
+              borderRadius: 4,
+              barPercentage: 0.6,
+              categoryPercentage: 0.8
+            },
+            {
+              label: 'Selesai Sistem (DOF)',
+              data: dataRegDof,
+              backgroundColor: '#188038', // Hijau
+              borderRadius: 4,
+              barPercentage: 0.6,
+              categoryPercentage: 0.8
+            },
+            {
+              label: 'Fisik Completed',
+              data: dataRegFisik,
+              backgroundColor: '#9334e6', // Ungu
+              borderRadius: 4,
+              barPercentage: 0.6,
+              categoryPercentage: 0.8
+            }
+          ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
-          plugins: { legend: { display: false } },
+          plugins: { 
+            legend: { position: 'top', labels: { color: textColor, usePointStyle: true } },
+            tooltip: { mode: 'index', intersect: false }
+          },
           scales: { 
-            y: { beginAtZero: true, grid: { color: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)' }, ticks: { color: isDark ? '#e3e3e3' : '#475569' } }, 
-            x: { grid: { display: false }, ticks: { color: isDark ? '#e3e3e3' : '#475569' } } 
+            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: textColor } }, 
+            x: { grid: { display: false }, ticks: { color: textColor } } 
           }
         }
       });
 
-      // B. Status Proses (DOF) - CHART BARU
+      // --- B. Render Chart Status (Donat) ---
       const ctxStatus = document.getElementById('chartStatus').getContext('2d');
       if(chartStatusInstance) chartStatusInstance.destroy();
 
-      // Gunakan data dari backend summary atau hitung manual jika preview
-      const statusLabels = statusDofData ? Object.keys(statusDofData) : ['SELESAI', 'PENDING'];
-      const statusValues = statusDofData ? Object.values(statusDofData) : [10, 5];
-      const colors = ['#188038', '#f9ab00', '#d93025', '#0b57d0', '#9334e6'];
+      const donutLabels = ['Data Masuk', 'Selesai DOF', 'Fisik Completed'];
+      const donutData = [totalMasuk, totalDofSelesai, totalFisikCompleted];
+      const donutColors = ['#0b57d0', '#188038', '#9334e6']; // Konsisten dengan bar chart
 
       chartStatusInstance = new Chart(ctxStatus, {
         type: 'doughnut',
         data: {
-          labels: statusLabels,
+          labels: donutLabels,
           datasets: [{
-            data: statusValues,
-            backgroundColor: colors.slice(0, statusLabels.length),
-            borderWidth: 0
+            data: donutData,
+            backgroundColor: donutColors,
+            borderWidth: 0,
+            hoverOffset: 5
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
           cutout: '70%',
-          plugins: { legend: { position: 'right', labels: { color: isDark ? '#e3e3e3' : '#475569', boxWidth: 12, usePointStyle: true } } }
+          plugins: { 
+            legend: { 
+                position: 'right', 
+                labels: { color: textColor, boxWidth: 12, usePointStyle: true, padding: 15 } 
+            } 
+          }
         }
       });
     }
@@ -310,31 +414,35 @@
     }
 
     function updateChartColors() {
-      // Re-render chart jika tema berubah untuk update warna text
-      // Dalam implementasi sederhana ini, user perlu refresh atau fungsi renderCharts dipanggil ulang
-      // Namun CSS transisi sudah menangani UI utama
+      // Refresh saat ganti tema
     }
 
     // --- MOCK DATA ---
     function renderMockData() {
-      console.log("Rendering Mock Data");
+      console.log("Rendering Mock Data Final");
       const mockRows = [
-        { "PUD": "CV MULIA ABADI", "STATUS DOF": "SELESAI", "DRAFTER": "GUNAWAN", "NILAI PERMINTAAN": 20501100, "STATUS PEMBAYARAN": "BELUM" },
-        { "PUD": "CV WALADUN TANI", "STATUS DOF": "SELESAI", "DRAFTER": "GUNAWAN", "NILAI PERMINTAAN": 4725000, "STATUS PEMBAYARAN": "SUDAH" },
-        { "PUD": "CV MAJU JAYA", "STATUS DOF": "PENDING", "DRAFTER": "BUDI", "NILAI PERMINTAAN": 15000000, "STATUS PEMBAYARAN": "SUDAH" },
-        { "PUD": "PT SINTESA", "STATUS DOF": "PROSES", "DRAFTER": "SITI", "NILAI PERMINTAAN": 50000000, "STATUS PEMBAYARAN": "BELUM" },
+        { "REGIONAL": "SUMBAGSEL", "PUD": "CV MULIA ABADI", "STATUS DOF": "SELESAI", "STATUS FISIK": "COMPLETED", "DRAFTER": "GUNAWAN", "NILAI PERMINTAAN": 20501100, "STATUS PEMBAYARAN": "BELUM" },
+        { "REGIONAL": "SUMBAGSEL", "PUD": "CV WALADUN TANI", "STATUS DOF": "SELESAI", "STATUS FISIK": "COMPLETED", "DRAFTER": "GUNAWAN", "NILAI PERMINTAAN": 4725000, "STATUS PEMBAYARAN": "SUDAH" },
+        { "REGIONAL": "JABAR", "PUD": "CV MAJU JAYA", "STATUS DOF": "PENDING", "STATUS FISIK": "BELUM", "DRAFTER": "BUDI", "NILAI PERMINTAAN": 15000000, "STATUS PEMBAYARAN": "SUDAH" },
+        { "REGIONAL": "JABAR", "PUD": "PT SINTESA", "STATUS DOF": "PROSES", "DOKUMEN FISIK": "ADA", "DRAFTER": "SITI", "NILAI PERMINTAAN": 50000000, "STATUS PEMBAYARAN": "BELUM" },
+        { "REGIONAL": "JATENG", "PUD": "UD SUMBER REJEKI", "STATUS DOF": "SELESAI", "STATUS DOKUMEN": "COMPLETED", "DRAFTER": "SITI", "NILAI PERMINTAAN": 12000000, "STATUS PEMBAYARAN": "SUDAH" },
+        { "REGIONAL": "JATENG", "PUD": "CV TANI MAKMUR", "STATUS DOF": "PENDING", "STATUS FISIK": "BELUM", "DRAFTER": "SITI", "NILAI PERMINTAAN": 8000000, "STATUS PEMBAYARAN": "BELUM" },
+        { "REGIONAL": "SULAWESI", "PUD": "PT AGRO JAYA", "STATUS DOF": "SELESAI", "FISIK": "COMPLETED", "DRAFTER": "BUDI", "NILAI PERMINTAAN": 25000000, "STATUS PEMBAYARAN": "SUDAH" },
       ];
+      
+      const summary = {
+        totalNilai: 135226100,
+        totalKuantum: 250000,
+        sudahBayar: 4,
+        totalUniquePUD: 7, 
+        statusDof: { "SELESAI": 4, "PENDING": 2, "PROSES": 1 },
+        totalData: 7
+      };
+
       renderDashboard({
         status: 'success',
         data: mockRows,
-        summary: {
-          totalNilai: 90226100,
-          totalKuantum: 186058,
-          sudahBayar: 2,
-          totalUniquePUD: 4, // Mock
-          statusDof: { "SELESAI": 2, "PENDING": 1, "PROSES": 1 }, // Mock
-          totalData: 4
-        }
+        summary: summary
       });
     }
   </script>
