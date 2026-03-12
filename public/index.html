@@ -75,7 +75,7 @@
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywKScoceeAiCiAIiT_L8xHP-8KcdLI8pJpVAEhFrJbg8bqNBGkC-MwAcNhHSiQPk2BoQ/exec'; 
   </script>
 
-  <!-- NAVBAR (Ukuran Dikecilkan ~75% & Filter Ditambahkan) -->
+  <!-- NAVBAR -->
   <nav class="sticky top-0 z-50 bg-white/80 dark:bg-[#1e1f20]/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-800 px-4 py-2 flex justify-between items-center gap-2">
     <!-- KIRI: Logo & Judul -->
     <div class="flex items-center gap-3 shrink-0">
@@ -97,12 +97,12 @@
 
     <!-- KANAN: Filter & Tema -->
     <div class="flex items-center gap-2">
-        <!-- THEME TOGGLE (Dipindah ke Kiri) -->
+        <!-- THEME TOGGLE -->
         <button onclick="toggleTheme()" class="p-1.5 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors shrink-0">
           <span id="themeIcon" class="material-symbols-rounded text-lg">dark_mode</span>
         </button>
 
-        <!-- FILTER TAHAP (Tanpa Icon Filter, Paling Kanan) -->
+        <!-- FILTER TAHAP -->
         <div class="relative">
              <select id="tahapFilter" onchange="handleTahapChange()" class="appearance-none bg-gray-100 dark:bg-gray-800 border border-transparent dark:border-gray-700 text-gray-700 dark:text-gray-300 py-1.5 pl-3 pr-8 rounded-lg text-xs font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer transition-shadow hover:bg-gray-200 dark:hover:bg-gray-700 w-32 sm:w-40 truncate">
                 <option value="ALL">Semua Tahap</option>
@@ -118,17 +118,13 @@
   <!-- CONTENT -->
   <main class="flex-grow container mx-auto p-4 md:p-6 max-w-7xl flex flex-col">
     
-    <!-- LOADING & ERROR (ANIMASI KEMUDI KAPAL) -->
+    <!-- LOADING & ERROR -->
     <div id="loading" class="flex-grow flex flex-col justify-center items-center min-h-[80vh] gap-6">
-      
       <div class="loader-container">
-        <!-- SVG Ship Wheel (Vector) -->
         <svg class="ship-wheel" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
             <path d="M12 2C12.5523 2 13 2.44772 13 3V4.06206C16.5541 4.54271 19.4573 7.44591 19.9379 11H21C21.5523 11 22 11.4477 22 12C22 12.5523 21.5523 13 21 13H19.9379C19.4573 16.5541 16.5541 19.4573 13 19.9379V21C13 21.5523 12.5523 22 12 22C11.4477 22 11 21.5523 11 21V19.9379C7.44591 19.4573 4.54271 16.5541 4.06206 13H3C2.44772 13 2 12.5523 2 12C2 11.4477 2.44772 11 3 11H4.06206C4.54271 7.44591 7.44591 4.54271 11 4.06206V3C11 2.44772 11.4477 2 12 2ZM12 6C8.68629 6 6 8.68629 6 12C6 15.3137 8.68629 18 12 18C15.3137 18 18 15.3137 18 12C18 8.68629 15.3137 6 12 6ZM12 9.5C13.3807 9.5 14.5 10.6193 14.5 12C14.5 13.3807 13.3807 14.5 12 14.5C10.6193 14.5 9.5 13.3807 9.5 12C9.5 10.6193 10.6193 9.5 12 9.5Z" />
         </svg>
       </div>
-
-      <!-- Typography -->
       <div class="text-center space-y-1">
         <p class="text-sm font-bold text-gray-500 dark:text-gray-400 uppercase tracking-[0.2em] animate-pulse">
           IWAK SEPAT, IWAK GABUS...
@@ -142,7 +138,6 @@
       
       <!-- 5 KEY METRICS -->
       <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-        
         <!-- 1. Total Nilai -->
         <div class="bg-white dark:bg-[#1e1f20] p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm flex flex-col justify-between h-full relative overflow-hidden group">
           <div class="absolute right-[-10px] top-[-10px] opacity-5 group-hover:opacity-10 transition-opacity">
@@ -153,23 +148,17 @@
                 <span class="material-symbols-rounded text-3xl text-green-600">payments</span>
                 <span class="text-xs md:text-sm font-medium text-gray-500">Total Nilai</span>
             </div>
-            
             <p class="text-lg font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2 md:hidden" id="card-nilai-mobile">0</p>
             <p class="hidden md:block text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2" id="card-nilai-desktop">0</p>
-            
-            <!-- Progress Bar Stacked -->
             <div class="mt-4">
                <div class="flex justify-between text-[10px] text-gray-400 mb-1">
                  <span>Progress Pencairan</span>
                  <span id="pct-nilai">0%</span>
                </div>
                <div class="flex w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                 <!-- Green: Sudah Bayar -->
                  <div id="bar-nilai-bayar" class="bg-green-500 h-full progress-segment" style="width: 0%" title="Lunas"></div>
-                 <!-- Yellow: Fisik Completed (Belum Bayar) -->
                  <div id="bar-nilai-fisik" class="bg-yellow-400 h-full progress-segment" style="width: 0%" title="Verifikasi"></div>
                </div>
-               <!-- Legend -->
                <div class="flex gap-3 mt-2 text-[10px] text-gray-500 dark:text-gray-400 font-medium">
                   <div class="flex items-center gap-1"><div class="w-2 h-2 bg-green-500 rounded-full"></div> Lunas</div>
                   <div class="flex items-center gap-1"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> Verifikasi</div>
@@ -189,8 +178,6 @@
                 <span class="text-xs md:text-sm font-medium text-gray-500">Total PUD</span>
             </div>
             <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mt-2" id="card-pud">0</p>
-            
-            <!-- Progress Bar Stacked -->
             <div class="mt-4">
                <div class="flex justify-between text-[10px] text-gray-400 mb-1">
                  <span>Status PUD</span>
@@ -200,7 +187,6 @@
                  <div id="bar-pud-bayar" class="bg-indigo-500 h-full progress-segment" style="width: 0%" title="Selesai"></div>
                  <div id="bar-pud-fisik" class="bg-yellow-400 h-full progress-segment" style="width: 0%" title="Proses"></div>
                </div>
-               <!-- Legend -->
                <div class="flex gap-3 mt-2 text-[10px] text-gray-500 dark:text-gray-400 font-medium">
                   <div class="flex items-center gap-1"><div class="w-2 h-2 bg-indigo-500 rounded-full"></div> Selesai</div>
                   <div class="flex items-center gap-1"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> Proses</div>
@@ -220,8 +206,6 @@
                 <span class="text-xs md:text-sm font-medium text-gray-500">Total Kuantum</span>
             </div>
             <p class="text-lg md:text-xl font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2" id="card-kuantum">0</p>
-            
-            <!-- Progress Bar Stacked -->
             <div class="mt-4">
                <div class="flex justify-between text-[10px] text-gray-400 mb-1">
                  <span>Status Penyaluran</span>
@@ -231,7 +215,6 @@
                  <div id="bar-kuantum-bayar" class="bg-blue-500 h-full progress-segment" style="width: 0%" title="Terbayar"></div>
                  <div id="bar-kuantum-fisik" class="bg-yellow-400 h-full progress-segment" style="width: 0%" title="Verifikasi"></div>
                </div>
-               <!-- Legend -->
                <div class="flex gap-3 mt-2 text-[10px] text-gray-500 dark:text-gray-400 font-medium">
                   <div class="flex items-center gap-1"><div class="w-2 h-2 bg-blue-500 rounded-full"></div> Terbayar</div>
                   <div class="flex items-center gap-1"><div class="w-2 h-2 bg-yellow-400 rounded-full"></div> Verifikasi</div>
@@ -251,19 +234,18 @@
                 <span class="text-xs md:text-sm font-medium text-gray-500">Pembayaran</span>
             </div>
             <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mt-2" id="card-bayar">0</p>
-            
-             <!-- Progress Bar Stacked (Simplified for Count) -->
             <div class="mt-4">
                <div class="flex justify-between text-[10px] text-gray-400 mb-1">
-                 <span>PUD Lunas</span>
+                 <span>Status Pembayaran</span>
                  <span id="pct-bayar">0%</span>
                </div>
                <div class="flex w-full h-2 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
-                 <div id="bar-bayar-selesai" class="bg-amber-500 h-full progress-segment" style="width: 0%" title="Transaksi Selesai"></div>
+                 <div id="bar-bayar-lunas" class="bg-green-500 h-full progress-segment" style="width: 0%" title="Lunas"></div>
+                 <div id="bar-bayar-proses" class="bg-blue-400 h-full progress-segment" style="width: 0%" title="Proses"></div>
                </div>
-               <!-- Legend -->
                <div class="flex gap-3 mt-2 text-[10px] text-gray-500 dark:text-gray-400 font-medium">
-                  <div class="flex items-center gap-1"><div class="w-2 h-2 bg-amber-500 rounded-full"></div> Transaksi Selesai</div>
+                  <div class="flex items-center gap-1"><div class="w-2 h-2 bg-green-500 rounded-full"></div> Lunas</div>
+                  <div class="flex items-center gap-1"><div class="w-2 h-2 bg-blue-400 rounded-full"></div> Proses</div>
                </div>
             </div>
           </div>
@@ -272,6 +254,7 @@
 
       <!-- CHARTS AREA -->
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
         <!-- Chart: Regional Performance -->
         <div class="lg:col-span-2 bg-white dark:bg-[#1e1f20] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
           <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
@@ -279,8 +262,6 @@
               <span class="material-symbols-rounded text-gray-400">map</span>
               Progress Regional
             </h3>
-            
-            <!-- DROPDOWN FILTER CHART -->
             <div class="relative">
               <select id="chartMetricSelect" onchange="updateRegionalChart()" class="appearance-none bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 py-2 pl-4 pr-10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
                 <option value="pud">Berdasarkan Total PUD</option>
@@ -292,7 +273,6 @@
               </div>
             </div>
           </div>
-          
           <div class="h-72 w-full">
             <canvas id="chartRegional"></canvas>
           </div>
@@ -308,6 +288,31 @@
             <canvas id="chartStatus"></canvas>
           </div>
         </div>
+
+        <!-- Chart: Provinsi Performance -->
+        <div class="lg:col-span-3 bg-white dark:bg-[#1e1f20] p-6 rounded-3xl border border-gray-100 dark:border-gray-800 shadow-sm">
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+            <h3 class="text-lg font-semibold flex items-center gap-2">
+              <span class="material-symbols-rounded text-gray-400">location_city</span>
+              Progress Provinsi
+            </h3>
+            <div class="relative">
+              <select id="chartMetricProvSelect" onchange="updateProvinsiChart()" class="appearance-none bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 py-2 pl-4 pr-10 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer">
+                <option value="pud">Berdasarkan Total PUD</option>
+                <option value="nilai">Berdasarkan Nilai (Rp)</option>
+                <option value="kuantum">Berdasarkan Kuantum (Kg)</option>
+              </select>
+              <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
+                <span class="material-symbols-rounded text-sm">expand_more</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="h-80 w-full">
+            <canvas id="chartProvinsi"></canvas>
+          </div>
+        </div>
+
       </div>
 
       <!-- TABLE -->
@@ -324,9 +329,9 @@
           <table class="w-full text-left text-sm">
             <thead class="bg-gray-50 dark:bg-[#252628] text-gray-500 uppercase font-medium">
               <tr>
+                <th class="px-6 py-4">PROVINSI</th>
                 <th class="px-6 py-4">REG</th>
                 <th class="px-6 py-4">PUD</th>
-                <!-- TAHAP COLUMN REMOVED -->
                 <th class="px-6 py-4 text-center">Dok. Fisik</th>
                 <th class="px-6 py-4">DOF</th>
                 <th class="px-6 py-4 text-right">Nilai Rupiah</th>
@@ -361,8 +366,8 @@
 
     // --- LOGIC ---
     let allTableRows = []; 
-    let filteredRows = []; // Store filtered data globally
-    let chartRegionalInstance, chartStatusInstance;
+    let filteredRows = []; 
+    let chartRegionalInstance, chartStatusInstance, chartProvinsiInstance;
 
     window.onload = function() {
       initTheme();
@@ -392,9 +397,8 @@
            allTableRows = json.data; 
            console.log("Detected Columns:", Object.keys(allTableRows[0] || {}));
            
-           // Init Dashboard
            populateTahapFilter(allTableRows);
-           handleTahapChange(); // This triggers dashboard update
+           handleTahapChange(); 
            
            document.getElementById('loading').classList.add('hidden');
            document.getElementById('dashboardContent').classList.remove('hidden');
@@ -441,8 +445,12 @@
         return findValueByHeader(row, ['REGIONAL', 'REG', 'WILAYAH']) || 'LAINNYA';
     }
 
+    // New Getter untuk Provinsi (berada di kolom D)
+    function getProvinsi(row) {
+        return findValueByHeader(row, ['PROVINSI', 'PROV']) || 'LAINNYA';
+    }
+
     function getTahap(row) {
-        // Find Column for Tahap (usually W, searching for keywords)
         return findValueByHeader(row, ['TAHAP', 'TAHAP PENYALURAN', 'BATCH', 'PERIODE']) || '-';
     }
 
@@ -458,19 +466,27 @@
     
     function checkStatusBayar(row) {
         const val = findValueByHeader(row, ['STATUS PEMBAYARAN', 'BAYAR']);
-        return String(val || '').toUpperCase().includes('SUDAH');
+        return String(val || '').toUpperCase().includes('LUNAS');
+    }
+
+    function checkStatusProsesBayar(row) {
+        const val = findValueByHeader(row, ['STATUS PEMBAYARAN', 'BAYAR']);
+        return String(val || '').toUpperCase().includes('PROSES');
     }
 
     function parseIndonesianNumber(val) {
         if (!val) return 0;
         if (typeof val === 'number') return val;
-        let str = String(val).replace(/[^\d,.-]/g, '');
+        let str = String(val).replace(/[^\d,.;-]/g, '');
+        // Sesuaikan parser untuk mendukung titik koma bila diperlukan di raw data
         if (str.includes('.') && str.includes(',')) {
             str = str.lastIndexOf(',') > str.lastIndexOf('.') ? str.replace(/\./g, '').replace(',', '.') : str.replace(/,/g, '');
         } else if (str.includes('.')) {
              if ((str.match(/\./g) || []).length > 1 || str.split('.')[1].length === 3) str = str.replace(/\./g, '');
         } else if (str.includes(',')) {
             str = str.replace(',', '.');
+        } else if (str.includes(';')) {
+            str = str.replace(';', '.'); // Jika diparsing pakai ;
         }
         return parseFloat(str) || 0;
     }
@@ -483,7 +499,6 @@
             if(t && t !== '-' && t !== '') tahapSet.add(t);
         });
 
-        // Sort naturally (Tahap 1, Tahap 2, etc)
         const sortedTahap = Array.from(tahapSet).sort((a, b) => {
              return a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' });
         });
@@ -511,7 +526,6 @@
 
     // --- SEARCH ---
     function handleSearch(keyword) {
-        // Search applies within the current Filtered Rows (Tahap)
         const searchResults = filteredRows.filter(row => {
             const pudName = (findValueByHeader(row, ['PUD', 'NAMA CV', 'MITRA']) || '').toLowerCase();
             return pudName.includes(keyword.toLowerCase());
@@ -521,22 +535,15 @@
 
     // --- CORE UPDATE FUNCTION ---
     function updateDashboard(rows) {
-      // 1. Recalculate Summary Stats based on Filtered Rows
-      let totalNilaiReal = 0;
-      let totalNilaiBayar = 0;
-      let totalNilaiFisik = 0; 
-
-      let totalKuantumReal = 0;
-      let totalKuantumBayar = 0;
-      let totalKuantumFisik = 0;
-
-      let totalPudCount = 0;
-      let totalPudBayarCount = 0;
-      let totalPudFisikCount = 0;
+      let totalNilaiReal = 0, totalNilaiBayar = 0, totalNilaiFisik = 0; 
+      let totalKuantumReal = 0, totalKuantumBayar = 0, totalKuantumFisik = 0;
+      let totalPudCount = 0, totalPudBayarCount = 0, totalPudFisikCount = 0;
       
-      // Used for unique PUD counting
       const uniquePuds = new Set();
-      const uniquePudsBayar = new Set();
+      
+      let countBayarLunas = 0;
+      let countBayarProses = 0;
+      let countTotalData = 0;
 
       rows.forEach(r => {
           const nilai = parseIndonesianNumber(getColPermintaan(r, 'nilai'));
@@ -544,23 +551,24 @@
           const pudName = findValueByHeader(r, ['PUD', 'NAMA CV']);
           const isPud = !!pudName;
           
-          if(isPud) uniquePuds.add(pudName);
+          if(isPud) {
+              uniquePuds.add(pudName);
+              countTotalData++;
+              if (checkStatusBayar(r)) countBayarLunas++;
+              else if (checkStatusProsesBayar(r)) countBayarProses++;
+          }
 
           const isBayar = checkStatusBayar(r);
           const isFisikCompleted = checkIsCompleted(r);
 
-          // Sum Total
           totalNilaiReal += nilai;
           totalKuantumReal += kuantum;
-          if(isPud) totalPudCount++; // Note: this is row count for logic simplicity in bars, or use uniquePuds.size for Display
+          if(isPud) totalPudCount++; 
 
           if (isBayar) {
              totalNilaiBayar += nilai;
              totalKuantumBayar += kuantum;
-             if(isPud) {
-                 totalPudBayarCount++;
-                 uniquePudsBayar.add(pudName);
-             }
+             if(isPud) totalPudBayarCount++;
           } 
           else if (isFisikCompleted) {
              totalNilaiFisik += nilai;
@@ -574,13 +582,10 @@
       document.getElementById('card-nilai-desktop').textContent = formatRupiah(totalNilaiReal);
       document.getElementById('card-kuantum').textContent = totalKuantumReal.toLocaleString('id-ID');
       
-      // Update Bayar Card with actual filtered count
-      document.getElementById('card-bayar').textContent = uniquePudsBayar.size; // Showing Unique PUDs paid
-      document.getElementById('card-pud').textContent = uniquePuds.size; // Showing Unique PUDs total
+      document.getElementById('card-bayar').textContent = countBayarLunas.toLocaleString('id-ID');
+      document.getElementById('card-pud').textContent = uniquePuds.size;
 
       // 3. Render Progress Bars
-      
-      // Helper
       const setBar = (idBayar, idFisik, idPct, total, valBayar, valFisik, type) => {
           if (total === 0) {
               document.getElementById(idBayar).style.width = `0%`;
@@ -608,63 +613,53 @@
           document.getElementById(idPct).textContent = `${Math.round(pctBayar)}%`;
       };
 
-      // Bar Nilai
       setBar('bar-nilai-bayar', 'bar-nilai-fisik', 'pct-nilai', totalNilaiReal, totalNilaiBayar, totalNilaiFisik, 'money');
-
-      // Bar PUD (Row based for bar accuracy)
       setBar('bar-pud-bayar', 'bar-pud-fisik', 'pct-pud', totalPudCount, totalPudBayarCount, totalPudFisikCount, 'number');
-
-      // Bar Kuantum
       setBar('bar-kuantum-bayar', 'bar-kuantum-fisik', 'pct-kuantum', totalKuantumReal, totalKuantumBayar, totalKuantumFisik, 'number');
 
-      // Bar Pembayaran
-      const totalUnique = uniquePuds.size;
-      const totalPaidUnique = uniquePudsBayar.size;
-      const pctBayarOnly = totalUnique > 0 ? (totalPaidUnique / totalUnique) * 100 : 0;
-      const elBayarSelesai = document.getElementById('bar-bayar-selesai');
-      elBayarSelesai.style.width = `${pctBayarOnly}%`;
-      elBayarSelesai.title = `Sudah Bayar: ${totalPaidUnique} PUD`;
-      document.getElementById('pct-bayar').textContent = `${Math.round(pctBayarOnly)}%`;
+      const pctLunasData = countTotalData > 0 ? (countBayarLunas / countTotalData) * 100 : 0;
+      const pctProsesData = countTotalData > 0 ? (countBayarProses / countTotalData) * 100 : 0;
+      
+      const elBayarLunas = document.getElementById('bar-bayar-lunas');
+      elBayarLunas.style.width = `${pctLunasData}%`;
+      elBayarLunas.title = `Lunas: ${countBayarLunas} Data`;
+      
+      const elBayarProses = document.getElementById('bar-bayar-proses');
+      elBayarProses.style.width = `${pctProsesData}%`;
+      elBayarProses.title = `Proses: ${countBayarProses} Data`;
 
-      // 4. Update Charts & Table using the FILTERED rows
+      document.getElementById('pct-bayar').textContent = `${Math.round(pctLunasData)}%`;
+
+      // 4. Update Charts & Table
       updateRegionalChart(rows);
+      updateProvinsiChart(rows); // Panggil chart Provinsi
       renderStatusChart(rows);
       renderTable(rows);
     }
 
-    // --- FORMATTER FOR CARD (Mobile Specific) ---
+    // --- FORMATTER FOR CARD (Mobile Specific) & Koma jadi Titik Koma ---
     function formatCompactForCard(value) {
-        // Triliun
-        if (value >= 1e12) return (value / 1e12).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' T';
-        // Miliar
-        if (value >= 1e9) return (value / 1e9).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' M';
-        // Juta
-        if (value >= 1e6) return (value / 1e6).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' Jt';
-        
+        if (value >= 1e12) return (value / 1e12).toLocaleString('id-ID', {maximumFractionDigits: 2}).replace(/,/g, ';') + ' T';
+        if (value >= 1e9) return (value / 1e9).toLocaleString('id-ID', {maximumFractionDigits: 2}).replace(/,/g, ';') + ' M';
+        if (value >= 1e6) return (value / 1e6).toLocaleString('id-ID', {maximumFractionDigits: 2}).replace(/,/g, ';') + ' Jt';
         return formatRupiah(value);
     }
 
-    // --- FORMATTER FOR CHART NUMBERS ---
     function formatCompactNumber(value, metric) {
         if (metric === 'nilai') {
-            // Miliar
-            if (value >= 1e9) return (value / 1e9).toFixed(1).replace(/\.0$/, '') + ' M';
-            // Juta
-            if (value >= 1e6) return (value / 1e6).toFixed(1).replace(/\.0$/, '') + ' Jt';
-            // Fallback
-            return new Intl.NumberFormat('id-ID').format(value);
+            if (value >= 1e9) return (value / 1e9).toFixed(1).replace(/\.0$/, '').replace('.', ';') + ' M';
+            if (value >= 1e6) return (value / 1e6).toFixed(1).replace(/\.0$/, '').replace('.', ';') + ' Jt';
+            return new Intl.NumberFormat('id-ID').format(value).replace(/,/g, ';');
         } 
         if (metric === 'kuantum') {
-            // Ton (>= 1000 Kg)
-            if (value >= 1000) return (value / 1000).toFixed(1).replace(/\.0$/, '') + ' Ton';
-            return new Intl.NumberFormat('id-ID').format(value) + ' Kg';
+            if (value >= 1000) return (value / 1000).toFixed(1).replace(/\.0$/, '').replace('.', ';') + ' Ton';
+            return new Intl.NumberFormat('id-ID').format(value).replace(/,/g, ';') + ' Kg';
         }
-        return new Intl.NumberFormat('id-ID').format(value);
+        return new Intl.NumberFormat('id-ID').format(value).replace(/,/g, ';');
     }
 
-    // --- CHART LOGIC UPDATED ---
+    // --- CHART REGIONAL ---
     function updateRegionalChart(rowsToUse) {
-      // Use passed rows OR default to filteredRows if called from dropdown
       const rows = rowsToUse || filteredRows;
       const metric = document.getElementById('chartMetricSelect').value; 
       renderRegionalChart(rows, metric);
@@ -676,7 +671,6 @@
       const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
       
       const regStats = {};
-      
       rows.forEach(r => {
         const rawReg = getRegional(r);
         if (!rawReg || rawReg === 'LAINNYA') return; 
@@ -684,25 +678,12 @@
         const reg = rawReg.toUpperCase();
         if (!regStats[reg]) regStats[reg] = { total: 0, selesaiDof: 0, selesaiFisik: 0 };
         
-        // Logic Calculation
         if (metric === 'kuantum' || metric === 'nilai') {
             const valPermintaan = parseIndonesianNumber(getColPermintaan(r, metric));
-
-            // Bar 1: Total
             regStats[reg].total += valPermintaan;
-
-            // Bar 2: DOF (Status SELESAI)
-            if (checkStatusSelesai(r)) {
-                 regStats[reg].selesaiDof += valPermintaan;
-            }
-
-            // Bar 3: Fisik (Status COMPLETED)
-            if (checkIsCompleted(r)) {
-                 regStats[reg].selesaiFisik += valPermintaan;
-            }
-
+            if (checkStatusSelesai(r)) regStats[reg].selesaiDof += valPermintaan;
+            if (checkIsCompleted(r)) regStats[reg].selesaiFisik += valPermintaan;
         } else {
-            // Logic PUD (Count)
             regStats[reg].total += 1;
             if (checkStatusSelesai(r)) regStats[reg].selesaiDof += 1;
             if (checkIsCompleted(r)) regStats[reg].selesaiFisik += 1;
@@ -718,7 +699,6 @@
       const ctxRegional = document.getElementById('chartRegional').getContext('2d');
       if(chartRegionalInstance) chartRegionalInstance.destroy();
       
-      // Label based on metric
       let metricLabel = 'Total PUD';
       if (metric === 'nilai') metricLabel = 'Total Nilai';
       if (metric === 'kuantum') metricLabel = 'Total Kuantum';
@@ -739,26 +719,14 @@
           plugins: { 
             legend: { position: 'top', labels: { color: textColor, usePointStyle: true } },
             tooltip: { 
-                mode: 'index', 
-                intersect: false,
-                callbacks: {
-                    label: function(context) {
-                        return context.dataset.label + ': ' + formatCompactNumber(context.raw, metric);
-                    }
-                }
+                mode: 'index', intersect: false,
+                callbacks: { label: function(context) { return context.dataset.label + ': ' + formatCompactNumber(context.raw, metric); } }
             }
           },
           scales: { 
             y: { 
-                beginAtZero: true, 
-                grid: { color: gridColor }, 
-                ticks: { 
-                    color: textColor,
-                    maxTicksLimit: 6, 
-                    callback: function(value) {
-                        return formatCompactNumber(value, metric);
-                    }
-                } 
+                beginAtZero: true, grid: { color: gridColor }, 
+                ticks: { color: textColor, maxTicksLimit: 6, callback: function(value) { return formatCompactNumber(value, metric); } } 
             }, 
             x: { grid: { display: false }, ticks: { color: textColor } } 
           }
@@ -766,6 +734,86 @@
       });
     }
 
+    // --- CHART PROVINSI (NEW) ---
+    function updateProvinsiChart(rowsToUse) {
+      const rows = rowsToUse || filteredRows;
+      const metric = document.getElementById('chartMetricProvSelect').value; 
+      renderProvinsiChart(rows, metric);
+    }
+
+    function renderProvinsiChart(rows, metric) {
+      const isDark = htmlEl.classList.contains('dark');
+      const textColor = isDark ? '#e3e3e3' : '#475569';
+      const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.05)';
+      
+      const provStats = {};
+      rows.forEach(r => {
+        const rawProv = getProvinsi(r);
+        if (!rawProv || rawProv === 'LAINNYA' || rawProv.toLowerCase().includes('ref')) return; 
+
+        const prov = rawProv.toUpperCase();
+        if (!provStats[prov]) provStats[prov] = { total: 0, selesaiDof: 0, selesaiFisik: 0 };
+        
+        if (metric === 'kuantum' || metric === 'nilai') {
+            const valPermintaan = parseIndonesianNumber(getColPermintaan(r, metric));
+            provStats[prov].total += valPermintaan;
+            if (checkStatusSelesai(r)) provStats[prov].selesaiDof += valPermintaan;
+            if (checkIsCompleted(r)) provStats[prov].selesaiFisik += valPermintaan;
+        } else {
+            provStats[prov].total += 1;
+            if (checkStatusSelesai(r)) provStats[prov].selesaiDof += 1;
+            if (checkIsCompleted(r)) provStats[prov].selesaiFisik += 1;
+        }
+      });
+
+      const colorYellow = '#f9ab00'; 
+      const provinces = Object.keys(provStats);
+      const dataProvTotal = provinces.map(k => provStats[k].total);
+      const dataProvDof = provinces.map(k => provStats[k].selesaiDof);
+      const dataProvFisik = provinces.map(k => provStats[k].selesaiFisik);
+
+      const ctxProvinsi = document.getElementById('chartProvinsi').getContext('2d');
+      if(chartProvinsiInstance) chartProvinsiInstance.destroy();
+      
+      let metricLabel = 'Total PUD';
+      if (metric === 'nilai') metricLabel = 'Total Nilai';
+      if (metric === 'kuantum') metricLabel = 'Total Kuantum';
+
+      chartProvinsiInstance = new Chart(ctxProvinsi, {
+        type: 'bar',
+        data: {
+          labels: provinces,
+          datasets: [
+            { label: metric === 'pud' ? 'Total PUD' : metricLabel, data: dataProvTotal, backgroundColor: '#0b57d0', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
+            { label: 'Proses DOF', data: dataProvDof, backgroundColor: '#188038', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
+            { label: 'Fisik Diterima', data: dataProvFisik, backgroundColor: colorYellow, borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { 
+            legend: { position: 'top', labels: { color: textColor, usePointStyle: true } },
+            tooltip: { 
+                mode: 'index', intersect: false,
+                callbacks: { label: function(context) { return context.dataset.label + ': ' + formatCompactNumber(context.raw, metric); } }
+            }
+          },
+          scales: { 
+            y: { 
+                beginAtZero: true, grid: { color: gridColor }, 
+                ticks: { color: textColor, maxTicksLimit: 6, callback: function(value) { return formatCompactNumber(value, metric); } } 
+            }, 
+            x: { 
+                grid: { display: false }, 
+                ticks: { color: textColor, maxRotation: 45, minRotation: 0 } 
+            } 
+          }
+        }
+      });
+    }
+
+    // --- CHART STATUS (DONUT) ---
     function renderStatusChart(rows) {
       const isDark = htmlEl.classList.contains('dark');
       const textColor = isDark ? '#e3e3e3' : '#475569';
@@ -813,15 +861,23 @@
       const rowsToShow = rows.slice(0, 10);
 
       if(rowsToShow.length === 0) {
-        tableBody.innerHTML = `<tr><td colspan="6" class="px-6 py-8 text-center text-gray-400">Data tidak ditemukan untuk filter ini</td></tr>`;
+        tableBody.innerHTML = `<tr><td colspan="7" class="px-6 py-8 text-center text-gray-400">Data tidak ditemukan untuk filter ini</td></tr>`;
         return;
       }
       
       rowsToShow.forEach(row => {
-        const statusBayar = findValueByHeader(row, ['STATUS PEMBAYARAN', 'BAYAR']) || 'BELUM';
-        const badgeColorBayar = statusBayar.toUpperCase().includes('SUDAH') 
-          ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' 
-          : 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300';
+        const statusBayarRaw = findValueByHeader(row, ['STATUS PEMBAYARAN', 'BAYAR']) || 'BELUM';
+        const statusBayarUpper = String(statusBayarRaw).toUpperCase();
+        let statusBayar = 'BELUM';
+        let badgeColorBayar = 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-300';
+        
+        if (statusBayarUpper.includes('LUNAS')) {
+            statusBayar = 'LUNAS';
+            badgeColorBayar = 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300';
+        } else if (statusBayarUpper.includes('PROSES')) {
+            statusBayar = 'PROSES';
+            badgeColorBayar = 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300';
+        }
         
         const isCompleted = checkIsCompleted(row);
         const statusFisikDisplay = isCompleted ? 'DITERIMA' : (findValueByHeader(row, ['DOKUMEN FISIK']) || '-');
@@ -830,16 +886,16 @@
           : 'text-gray-500 bg-gray-100 dark:text-gray-400 dark:bg-gray-800';
 
         const statusDof = findValueByHeader(row, ['STATUS DOF']) || '-';
+        const provinsi = getProvinsi(row); // Menambahkan provinsi
         const regional = getRegional(row);
-        const tahap = getTahap(row); // Keep for logic but don't display
         const pudName = findValueByHeader(row, ['PUD', 'NAMA CV']);
         const valRupiah = parseIndonesianNumber(getColPermintaan(row, 'nilai'));
 
         tableHtml += `
           <tr class="hover:bg-gray-50 dark:hover:bg-[#252628] transition-colors">
+            <td class="px-6 py-4 font-semibold text-gray-600 dark:text-gray-400">${provinsi}</td>
             <td class="px-6 py-4 font-bold text-gray-500">${regional}</td>
             <td class="px-6 py-4 font-medium">${pudName || '-'}</td>
-            <!-- TAHAP COLUMN DATA REMOVED -->
             <td class="px-6 py-4 text-center">
               <span class="text-[10px] font-bold px-2 py-0.5 rounded ${badgeColorFisik} border border-transparent uppercase tracking-wide truncate max-w-[80px] block mx-auto" title="${statusFisikDisplay}">${statusFisikDisplay}</span>
             </td>
@@ -855,7 +911,10 @@
     }
 
     function formatRupiah(num) {
-      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(num || 0);
+      // Menambahkan replace untuk mengubah koma (,) menjadi titik koma (;)
+      return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 })
+          .format(num || 0)
+          .replace(/,/g, ';');
     }
     
     function updateChartColors() {} 
