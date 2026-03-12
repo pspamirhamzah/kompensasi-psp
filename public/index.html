@@ -205,7 +205,8 @@
                 <span class="material-symbols-rounded text-3xl text-blue-600">scale</span>
                 <span class="text-xs md:text-sm font-medium text-gray-500">Total Kuantum</span>
             </div>
-            <p class="text-lg md:text-xl font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2" id="card-kuantum">0</p>
+            <p class="text-lg font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2 md:hidden" id="card-kuantum-mobile">0</p>
+            <p class="hidden md:block text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2" id="card-kuantum-desktop">0</p>
             <div class="mt-4">
                <div class="flex justify-between text-[10px] text-gray-400 mb-1">
                  <span>Status Penyaluran</span>
@@ -233,7 +234,8 @@
                 <span class="material-symbols-rounded text-3xl text-amber-500">verified</span>
                 <span class="text-xs md:text-sm font-medium text-gray-500">Pembayaran</span>
             </div>
-            <p class="text-lg md:text-2xl font-bold tracking-tight text-gray-900 dark:text-white mt-2" id="card-bayar">0</p>
+            <p class="text-lg font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2 md:hidden" id="card-bayar-mobile">0</p>
+            <p class="hidden md:block text-2xl font-bold tracking-tight text-gray-900 dark:text-white truncate mt-2" id="card-bayar-desktop">0</p>
             <div class="mt-4">
                <div class="flex justify-between text-[10px] text-gray-400 mb-1">
                  <span>Status Pembayaran</span>
@@ -541,9 +543,9 @@
       
       const uniquePuds = new Set();
       
-      let countBayarLunas = 0;
-      let countBayarProses = 0;
-      let countTotalData = 0;
+      let nominalBayarLunas = 0;
+      let nominalBayarProses = 0;
+      let nominalTotalData = 0;
 
       rows.forEach(r => {
           const nilai = parseIndonesianNumber(getColPermintaan(r, 'nilai'));
@@ -553,9 +555,9 @@
           
           if(isPud) {
               uniquePuds.add(pudName);
-              countTotalData++;
-              if (checkStatusBayar(r)) countBayarLunas++;
-              else if (checkStatusProsesBayar(r)) countBayarProses++;
+              nominalTotalData += nilai;
+              if (checkStatusBayar(r)) nominalBayarLunas += nilai;
+              else if (checkStatusProsesBayar(r)) nominalBayarProses += nilai;
           }
 
           const isBayar = checkStatusBayar(r);
@@ -580,9 +582,12 @@
       // 2. Render Numbers
       document.getElementById('card-nilai-mobile').textContent = formatCompactForCard(totalNilaiReal);
       document.getElementById('card-nilai-desktop').textContent = formatRupiah(totalNilaiReal);
-      document.getElementById('card-kuantum').textContent = totalKuantumReal.toLocaleString('id-ID');
       
-      document.getElementById('card-bayar').textContent = countBayarLunas.toLocaleString('id-ID');
+      document.getElementById('card-kuantum-mobile').textContent = (totalKuantumReal / 1000).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' Ton';
+      document.getElementById('card-kuantum-desktop').textContent = totalKuantumReal.toLocaleString('id-ID') + ' Kg';
+      
+      document.getElementById('card-bayar-mobile').textContent = formatCompactForCard(nominalBayarLunas);
+      document.getElementById('card-bayar-desktop').textContent = formatRupiah(nominalBayarLunas);
       document.getElementById('card-pud').textContent = uniquePuds.size;
 
       // 3. Render Progress Bars
@@ -617,16 +622,16 @@
       setBar('bar-pud-bayar', 'bar-pud-fisik', 'pct-pud', totalPudCount, totalPudBayarCount, totalPudFisikCount, 'number');
       setBar('bar-kuantum-bayar', 'bar-kuantum-fisik', 'pct-kuantum', totalKuantumReal, totalKuantumBayar, totalKuantumFisik, 'number');
 
-      const pctLunasData = countTotalData > 0 ? (countBayarLunas / countTotalData) * 100 : 0;
-      const pctProsesData = countTotalData > 0 ? (countBayarProses / countTotalData) * 100 : 0;
+      const pctLunasData = nominalTotalData > 0 ? (nominalBayarLunas / nominalTotalData) * 100 : 0;
+      const pctProsesData = nominalTotalData > 0 ? (nominalBayarProses / nominalTotalData) * 100 : 0;
       
       const elBayarLunas = document.getElementById('bar-bayar-lunas');
       elBayarLunas.style.width = `${pctLunasData}%`;
-      elBayarLunas.title = `Lunas: ${countBayarLunas} Data`;
+      elBayarLunas.title = `Lunas: ${formatCompactForCard(nominalBayarLunas)}`;
       
       const elBayarProses = document.getElementById('bar-bayar-proses');
       elBayarProses.style.width = `${pctProsesData}%`;
-      elBayarProses.title = `Proses: ${countBayarProses} Data`;
+      elBayarProses.title = `Proses: ${formatCompactForCard(nominalBayarProses)}`;
 
       document.getElementById('pct-bayar').textContent = `${Math.round(pctLunasData)}%`;
 
@@ -639,9 +644,9 @@
 
     // --- FORMATTER FOR CARD (Mobile Specific) & Koma jadi Titik Koma ---
     function formatCompactForCard(value) {
-        if (value >= 1e12) return (value / 1e12).toLocaleString('id-ID', {maximumFractionDigits: 2}).replace(/,/g, ';') + ' T';
-        if (value >= 1e9) return (value / 1e9).toLocaleString('id-ID', {maximumFractionDigits: 2}).replace(/,/g, ';') + ' M';
-        if (value >= 1e6) return (value / 1e6).toLocaleString('id-ID', {maximumFractionDigits: 2}).replace(/,/g, ';') + ' Jt';
+        if (value >= 1e12) return (value / 1e12).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' T';
+        if (value >= 1e9) return (value / 1e9).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' M';
+        if (value >= 1e6) return (value / 1e6).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' Jt';
         return formatRupiah(value);
     }
 
@@ -652,8 +657,8 @@
             return new Intl.NumberFormat('id-ID').format(value).replace(/,/g, ';');
         } 
         if (metric === 'kuantum') {
-            if (value >= 1000) return (value / 1000).toFixed(1).replace(/\.0$/, '').replace('.', ';') + ' Ton';
-            return new Intl.NumberFormat('id-ID').format(value).replace(/,/g, ';') + ' Kg';
+            if (value >= 1000) return (value / 1000).toFixed(1).replace(/\.0$/, '').replace('.', ',') + ' Ton';
+            return new Intl.NumberFormat('id-ID').format(value) + ' Kg';
         }
         return new Intl.NumberFormat('id-ID').format(value).replace(/,/g, ';');
     }
@@ -741,6 +746,42 @@
       renderProvinsiChart(rows, metric);
     }
 
+    // Fungsi helper untuk menyingkat nama provinsi
+    function singkatanProvinsi(prov) {
+        if (!prov) return '';
+        const p = prov.toUpperCase().trim();
+        const map = {
+            'JAWA TENGAH': 'JATENG',
+            'JAWA TIMUR': 'JATIM',
+            'JAWA BARAT': 'JABAR',
+            'DI YOGYAKARTA': 'YOGYA',
+            'D.I YOGYAKARTA': 'YOGYA',
+            'DAERAH ISTIMEWA YOGYAKARTA': 'YOGYA',
+            'YOGYAKARTA': 'YOGYA',
+            'DKI JAKARTA': 'JAKARTA',
+            'NUSA TENGGARA BARAT': 'NTB',
+            'NUSA TENGGARA TIMUR': 'NTT',
+            'SUMATERA SELATAN': 'SUMSEL',
+            'SUMATERA UTARA': 'SUMUT',
+            'SUMATERA BARAT': 'SUMBAR',
+            'KALIMANTAN BARAT': 'KALBAR',
+            'KALIMANTAN TENGAH': 'KALTENG',
+            'KALIMANTAN TIMUR': 'KALTIM',
+            'KALIMANTAN SELATAN': 'KALSEL',
+            'KALIMANTAN UTARA': 'KALTARA',
+            'SULAWESI SELATAN': 'SULSEL',
+            'SULAWESI UTARA': 'SULUT',
+            'SULAWESI TENGAH': 'SULTENG',
+            'SULAWESI TENGGARA': 'SULTRA',
+            'SULAWESI BARAT': 'SULBAR',
+            'KEPULAUAN BANGKA BELITUNG': 'BABEL',
+            'BANGKA BELITUNG': 'BABEL',
+            'MALUKU UTARA': 'MALUT',
+            'PAPUA BARAT': 'PABAR'
+        };
+        return map[p] || p;
+    }
+
     function renderProvinsiChart(rows, metric) {
       const isDark = htmlEl.classList.contains('dark');
       const textColor = isDark ? '#e3e3e3' : '#475569';
@@ -751,7 +792,8 @@
         const rawProv = getProvinsi(r);
         if (!rawProv || rawProv === 'LAINNYA' || rawProv.toLowerCase().includes('ref')) return; 
 
-        const prov = rawProv.toUpperCase();
+        // Gunakan fungsi singkatan agar tampil ringkas dan terkumpul otomatis
+        const prov = singkatanProvinsi(rawProv);
         if (!provStats[prov]) provStats[prov] = { total: 0, selesaiDof: 0, selesaiFisik: 0 };
         
         if (metric === 'kuantum' || metric === 'nilai') {
