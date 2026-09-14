@@ -394,31 +394,44 @@
       try {
         let combinedData = [];
         
-        // Membentuk array promise untuk melakukan fetch ke semua sheet yang ditentukan
-        const fetchPromises = DATA_SHEETS.map(sheetName => {
-            // Melampirkan parameter sheet ke URL API Anda
+        // Memanggil sheet SATU PER SATU (Sekuensial) untuk mencegah penolakan dari Google (Too many requests)
+        for (const sheetName of DATA_SHEETS) {
             const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(sheetName)}`;
-            // Tambahkan redirect: 'follow' untuk menangani Google Apps Script redirect
-            return fetch(url, { redirect: 'follow' }).then(res => {
+            
+            try {
+                // Fetch request standard untuk Google Apps script GET
+                const res = await fetch(url, { redirect: 'follow', method: 'GET' });
+                
                 if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
-                return res.json();
-            });
-        });
-
-        // Menunggu semua permintaan fetch selesai secara bersamaan
-        const results = await Promise.all(fetchPromises);
-        
-        // Gabungkan seluruh data
-        results.forEach((json, index) => {
-            if(json.status === 'success' && json.data) {
-                combinedData = combinedData.concat(json.data);
-            } else {
-                console.warn(`Gagal memuat data dari ${DATA_SHEETS[index]}:`, json.message);
+                
+                const text = await res.text(); // Membaca teks mentah untuk mengantisipasi error Auth HTML
+                
+                // Deteksi apabila Google Apps script me-return error page / login page karena salah Deployment
+                if (text.includes('<!DOCTYPE html>') || text.includes('<html') || text.includes('Google Drive')) {
+                    throw new Error("Apps Script Access Error");
+                }
+                
+                const json = JSON.parse(text);
+                
+                // Normalisasi Struktur JSON sesuai standar
+                if (json.status === 'success' && json.data) {
+                    combinedData = combinedData.concat(json.data);
+                } else if (Array.isArray(json)) {
+                    combinedData = combinedData.concat(json);
+                } else if (json.data) {
+                    combinedData = combinedData.concat(json.data);
+                } else {
+                    console.warn(`Format JSON tak terduga dari ${sheetName}:`, json);
+                }
+            } catch(e) {
+                console.warn(`Gagal memuat sheet ${sheetName}:`, e.message);
+                // Lempar ke catch blok bawah jika error kritikal
+                if(e.message === "Apps Script Access Error" || combinedData.length === 0) throw e;
             }
-        });
+        }
 
         if (combinedData.length === 0) {
-            throw new Error("Tidak ada data yang ditemukan di seluruh sheet.");
+            throw new Error("Tidak ada data yang berhasil dimuat dari server.");
         }
 
         allTableRows = combinedData; 
@@ -431,24 +444,25 @@
         document.getElementById('dashboardContent').classList.remove('hidden');
 
       } catch (err) {
-        console.error("Fetch failed", err);
+        console.error("Fetch failed:", err);
         
-        // Menambahkan instruksi perbaikan jika terkena error Failed to fetch (CORS/Akses)
+        // Petunjuk error interaktif yang sangat penting untuk perbaikan akses Google script
         let errorHint = "";
-        if (err.message.includes("Failed to fetch")) {
+        if (err.message.includes("Failed to fetch") || err.message.includes("Apps Script Access Error")) {
             errorHint = `
-              <div class="mt-4 text-left bg-red-50 dark:bg-red-900/50 p-4 rounded-lg text-sm">
-                <p class="font-bold mb-2">💡 Tips Perbaikan Error Akses:</p>
-                <ol class="list-decimal pl-4 space-y-1">
-                  <li>Buka kembali proyek Google Apps Script Anda.</li>
-                  <li>Klik <b>Terapkan (Deploy)</b> &gt; <b>Kelola penerapan (Manage deployments)</b> atau <b>Penerapan Baru</b>.</li>
-                  <li>Pastikan bagian <b>'Akses' (Who has access)</b> diatur menjadi <b>'Siapa saja' (Anyone)</b> (bukan 'Hanya Saya').</li>
-                  <li>Klik Terapkan. Salin URL baru jika berubah dan perbarui di HTML.</li>
+              <div class="mt-4 text-left bg-red-50 dark:bg-red-900/50 p-5 rounded-lg text-sm text-gray-800 dark:text-gray-200">
+                <p class="font-bold mb-3 text-red-700 dark:text-red-400">💡 Akses API Ditolak. Pastikan konfigurasi Deployment Anda benar:</p>
+                <ol class="list-decimal pl-5 space-y-2">
+                  <li>Buka proyek Google Apps Script Anda.</li>
+                  <li>Klik tombol biru <b>Terapkan (Deploy)</b> &gt; <b>Kelola penerapan (Manage deployments)</b> atau <b>Penerapan Baru</b>.</li>
+                  <li class="font-bold underline decoration-red-400">PENTING: Pastikan "Jalankan sebagai" (Execute as) diatur menjadi "Saya" (Me)!! <br><span class="text-xs text-gray-500 font-normal dark:text-gray-400">Jika diatur ke "Pengguna yang mengakses web", sistem akan memblokir karena membutuhkan otentikasi login.</span></li>
+                  <li>Pastikan "Siapa yang memiliki akses" diatur ke <b>"Siapa saja" (Anyone)</b>.</li>
+                  <li>Simpan / Terapkan, dan pastikan Anda meng-copy URL web app yang paling baru.</li>
                 </ol>
               </div>`;
         }
         
-        showError(`Gagal mengambil data.<br><span class="text-sm opacity-80">${err.message}</span>${errorHint}`);
+        showError(`<span class="font-bold text-lg">Gagal mengambil data</span><br><span class="text-sm opacity-80 mt-1 block">Alasan: ${err.message}</span>${errorHint}`);
       }
     }
 
