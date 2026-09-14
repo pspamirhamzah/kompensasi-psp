@@ -398,7 +398,8 @@
         const fetchPromises = DATA_SHEETS.map(sheetName => {
             // Melampirkan parameter sheet ke URL API Anda
             const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(sheetName)}`;
-            return fetch(url).then(res => {
+            // Tambahkan redirect: 'follow' untuk menangani Google Apps Script redirect
+            return fetch(url, { redirect: 'follow' }).then(res => {
                 if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
                 return res.json();
             });
@@ -431,7 +432,23 @@
 
       } catch (err) {
         console.error("Fetch failed", err);
-        showError(`Gagal mengambil data.<br><span class="text-sm opacity-80">${err.message}</span>`);
+        
+        // Menambahkan instruksi perbaikan jika terkena error Failed to fetch (CORS/Akses)
+        let errorHint = "";
+        if (err.message.includes("Failed to fetch")) {
+            errorHint = `
+              <div class="mt-4 text-left bg-red-50 dark:bg-red-900/50 p-4 rounded-lg text-sm">
+                <p class="font-bold mb-2">💡 Tips Perbaikan Error Akses:</p>
+                <ol class="list-decimal pl-4 space-y-1">
+                  <li>Buka kembali proyek Google Apps Script Anda.</li>
+                  <li>Klik <b>Terapkan (Deploy)</b> &gt; <b>Kelola penerapan (Manage deployments)</b> atau <b>Penerapan Baru</b>.</li>
+                  <li>Pastikan bagian <b>'Akses' (Who has access)</b> diatur menjadi <b>'Siapa saja' (Anyone)</b> (bukan 'Hanya Saya').</li>
+                  <li>Klik Terapkan. Salin URL baru jika berubah dan perbarui di HTML.</li>
+                </ol>
+              </div>`;
+        }
+        
+        showError(`Gagal mengambil data.<br><span class="text-sm opacity-80">${err.message}</span>${errorHint}`);
       }
     }
 
