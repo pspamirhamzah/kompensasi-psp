@@ -70,9 +70,11 @@
 </head>
 <body class="bg-[#f0f4f9] dark:bg-[#131314] text-slate-800 dark:text-gray-200 min-h-screen flex flex-col transition-colors duration-300">
 
-  <!-- CONFIG: URL GOOGLE APPS SCRIPT -->
+  <!-- CONFIG: URL GOOGLE APPS SCRIPT & NAMA SHEET -->
   <script>
-    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbywKScoceeAiCiAIiT_L8xHP-8KcdLI8pJpVAEhFrJbg8bqNBGkC-MwAcNhHSiQPk2BoQ/exec'; 
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzADEbGkkrY8A2qa36015lb340kJucAuygak5RkCUt_T1Zfsw3ZPicW1JOcVYYBrWXddg/exec'; 
+    // Tambahkan nama-nama sheet yang berisi data Anda
+    const DATA_SHEETS = ['Sheet1', 'Sheet2'];
   </script>
 
   <!-- NAVBAR -->
@@ -390,23 +392,43 @@
       }
 
       try {
-        const res = await fetch(APPS_SCRIPT_URL);
-        if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+        let combinedData = [];
         
-        const json = await res.json();
+        // Membentuk array promise untuk melakukan fetch ke semua sheet yang ditentukan
+        const fetchPromises = DATA_SHEETS.map(sheetName => {
+            // Melampirkan parameter sheet ke URL API Anda
+            const url = `${APPS_SCRIPT_URL}?sheet=${encodeURIComponent(sheetName)}`;
+            return fetch(url).then(res => {
+                if (!res.ok) throw new Error(`HTTP Error: ${res.status}`);
+                return res.json();
+            });
+        });
+
+        // Menunggu semua permintaan fetch selesai secara bersamaan
+        const results = await Promise.all(fetchPromises);
         
-        if(json.status === 'success') {
-           allTableRows = json.data; 
-           console.log("Detected Columns:", Object.keys(allTableRows[0] || {}));
-           
-           populateTahapFilter(allTableRows);
-           handleTahapChange(); 
-           
-           document.getElementById('loading').classList.add('hidden');
-           document.getElementById('dashboardContent').classList.remove('hidden');
-        } else {
-           throw new Error(json.message || "Kesalahan server.");
+        // Gabungkan seluruh data
+        results.forEach((json, index) => {
+            if(json.status === 'success' && json.data) {
+                combinedData = combinedData.concat(json.data);
+            } else {
+                console.warn(`Gagal memuat data dari ${DATA_SHEETS[index]}:`, json.message);
+            }
+        });
+
+        if (combinedData.length === 0) {
+            throw new Error("Tidak ada data yang ditemukan di seluruh sheet.");
         }
+
+        allTableRows = combinedData; 
+        console.log("Detected Columns:", Object.keys(allTableRows[0] || {}));
+        
+        populateTahapFilter(allTableRows);
+        handleTahapChange(); 
+        
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('dashboardContent').classList.remove('hidden');
+
       } catch (err) {
         console.error("Fetch failed", err);
         showError(`Gagal mengambil data.<br><span class="text-sm opacity-80">${err.message}</span>`);
@@ -447,7 +469,6 @@
         return findValueByHeader(row, ['REGIONAL', 'REG', 'WILAYAH']) || 'LAINNYA';
     }
 
-    // New Getter untuk Provinsi (berada di kolom D)
     function getProvinsi(row) {
         return findValueByHeader(row, ['PROVINSI', 'PROV']) || 'LAINNYA';
     }
@@ -480,7 +501,6 @@
         if (!val) return 0;
         if (typeof val === 'number') return val;
         let str = String(val).replace(/[^\d,.;-]/g, '');
-        // Sesuaikan parser untuk mendukung titik koma bila diperlukan di raw data
         if (str.includes('.') && str.includes(',')) {
             str = str.lastIndexOf(',') > str.lastIndexOf('.') ? str.replace(/\./g, '').replace(',', '.') : str.replace(/,/g, '');
         } else if (str.includes('.')) {
@@ -488,7 +508,7 @@
         } else if (str.includes(',')) {
             str = str.replace(',', '.');
         } else if (str.includes(';')) {
-            str = str.replace(';', '.'); // Jika diparsing pakai ;
+            str = str.replace(';', '.');
         }
         return parseFloat(str) || 0;
     }
@@ -506,6 +526,9 @@
         });
 
         const selectEl = document.getElementById('tahapFilter');
+        // Bersihkan opsi lama kecuali "Semua Tahap"
+        selectEl.innerHTML = '<option value="ALL">Semua Tahap</option>';
+        
         sortedTahap.forEach(t => {
             const opt = document.createElement('option');
             opt.value = t;
@@ -579,7 +602,7 @@
           }
       });
 
-      // 2. Render Numbers
+      // Render Numbers
       document.getElementById('card-nilai-mobile').textContent = formatCompactForCard(totalNilaiReal);
       document.getElementById('card-nilai-desktop').textContent = formatRupiah(totalNilaiReal);
       
@@ -590,7 +613,7 @@
       document.getElementById('card-bayar-desktop').textContent = formatRupiah(nominalBayarLunas);
       document.getElementById('card-pud').textContent = uniquePuds.size;
 
-      // 3. Render Progress Bars
+      // Render Progress Bars
       const setBar = (idBayar, idFisik, idPct, total, valBayar, valFisik, type) => {
           if (total === 0) {
               document.getElementById(idBayar).style.width = `0%`;
@@ -635,14 +658,14 @@
 
       document.getElementById('pct-bayar').textContent = `${Math.round(pctLunasData)}%`;
 
-      // 4. Update Charts & Table
+      // Update Charts & Table
       updateRegionalChart(rows);
-      updateProvinsiChart(rows); // Panggil chart Provinsi
+      updateProvinsiChart(rows); 
       renderStatusChart(rows);
       renderTable(rows);
     }
 
-    // --- FORMATTER FOR CARD (Mobile Specific) & Koma jadi Titik Koma ---
+    // --- FORMATTERS ---
     function formatCompactForCard(value) {
         if (value >= 1e12) return (value / 1e12).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' T';
         if (value >= 1e9) return (value / 1e9).toLocaleString('id-ID', {maximumFractionDigits: 2}) + ' M';
@@ -739,45 +762,26 @@
       });
     }
 
-    // --- CHART PROVINSI (NEW) ---
+    // --- CHART PROVINSI ---
     function updateProvinsiChart(rowsToUse) {
       const rows = rowsToUse || filteredRows;
       const metric = document.getElementById('chartMetricProvSelect').value; 
       renderProvinsiChart(rows, metric);
     }
 
-    // Fungsi helper untuk menyingkat nama provinsi
     function singkatanProvinsi(prov) {
         if (!prov) return '';
         const p = prov.toUpperCase().trim();
         const map = {
-            'JAWA TENGAH': 'JATENG',
-            'JAWA TIMUR': 'JATIM',
-            'JAWA BARAT': 'JABAR',
-            'DI YOGYAKARTA': 'YOGYA',
-            'D.I YOGYAKARTA': 'YOGYA',
-            'DAERAH ISTIMEWA YOGYAKARTA': 'YOGYA',
-            'YOGYAKARTA': 'YOGYA',
-            'DKI JAKARTA': 'JAKARTA',
-            'NUSA TENGGARA BARAT': 'NTB',
-            'NUSA TENGGARA TIMUR': 'NTT',
-            'SUMATERA SELATAN': 'SUMSEL',
-            'SUMATERA UTARA': 'SUMUT',
-            'SUMATERA BARAT': 'SUMBAR',
-            'KALIMANTAN BARAT': 'KALBAR',
-            'KALIMANTAN TENGAH': 'KALTENG',
-            'KALIMANTAN TIMUR': 'KALTIM',
-            'KALIMANTAN SELATAN': 'KALSEL',
-            'KALIMANTAN UTARA': 'KALTARA',
-            'SULAWESI SELATAN': 'SULSEL',
-            'SULAWESI UTARA': 'SULUT',
-            'SULAWESI TENGAH': 'SULTENG',
-            'SULAWESI TENGGARA': 'SULTRA',
-            'SULAWESI BARAT': 'SULBAR',
-            'KEPULAUAN BANGKA BELITUNG': 'BABEL',
-            'BANGKA BELITUNG': 'BABEL',
-            'MALUKU UTARA': 'MALUT',
-            'PAPUA BARAT': 'PABAR'
+            'JAWA TENGAH': 'JATENG', 'JAWA TIMUR': 'JATIM', 'JAWA BARAT': 'JABAR',
+            'DI YOGYAKARTA': 'YOGYA', 'D.I YOGYAKARTA': 'YOGYA', 'DAERAH ISTIMEWA YOGYAKARTA': 'YOGYA',
+            'YOGYAKARTA': 'YOGYA', 'DKI JAKARTA': 'JAKARTA', 'NUSA TENGGARA BARAT': 'NTB',
+            'NUSA TENGGARA TIMUR': 'NTT', 'SUMATERA SELATAN': 'SUMSEL', 'SUMATERA UTARA': 'SUMUT',
+            'SUMATERA BARAT': 'SUMBAR', 'KALIMANTAN BARAT': 'KALBAR', 'KALIMANTAN TENGAH': 'KALTENG',
+            'KALIMANTAN TIMUR': 'KALTIM', 'KALIMANTAN SELATAN': 'KALSEL', 'KALIMANTAN UTARA': 'KALTARA',
+            'SULAWESI SELATAN': 'SULSEL', 'SULAWESI UTARA': 'SULUT', 'SULAWESI TENGAH': 'SULTENG',
+            'SULAWESI TENGGARA': 'SULTRA', 'SULAWESI BARAT': 'SULBAR', 'KEPULAUAN BANGKA BELITUNG': 'BABEL',
+            'BANGKA BELITUNG': 'BABEL', 'MALUKU UTARA': 'MALUT', 'PAPUA BARAT': 'PABAR'
         };
         return map[p] || p;
     }
@@ -792,7 +796,6 @@
         const rawProv = getProvinsi(r);
         if (!rawProv || rawProv === 'LAINNYA' || rawProv.toLowerCase().includes('ref')) return; 
 
-        // Gunakan fungsi singkatan agar tampil ringkas dan terkumpul otomatis
         const prov = singkatanProvinsi(rawProv);
         if (!provStats[prov]) provStats[prov] = { total: 0, selesaiDof: 0, selesaiFisik: 0 };
         
@@ -928,7 +931,7 @@
           : 'text-gray-500 bg-gray-100 dark:text-gray-400 dark:bg-gray-800';
 
         const statusDof = findValueByHeader(row, ['STATUS DOF']) || '-';
-        const provinsi = getProvinsi(row); // Menambahkan provinsi
+        const provinsi = getProvinsi(row);
         const regional = getRegional(row);
         const pudName = findValueByHeader(row, ['PUD', 'NAMA CV']);
         const valRupiah = parseIndonesianNumber(getColPermintaan(row, 'nilai'));
@@ -953,7 +956,6 @@
     }
 
     function formatRupiah(num) {
-      // Menambahkan replace untuk mengubah koma (,) menjadi titik koma (;)
       return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 })
           .format(num || 0)
           .replace(/,/g, ';');
