@@ -768,7 +768,7 @@
           labels: regions,
           datasets: [
             { label: metric === 'pud' ? 'Total PUD' : metricLabel, data: dataRegTotal, backgroundColor: '#0b57d0', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
-            { label: 'Proses DOF', data: dataRegDof, backgroundColor: '#188038', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
+            { label: 'Proses di Keuangan', data: dataRegDof, backgroundColor: '#188038', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
             { label: 'Fisik Diterima', data: dataRegFisik, backgroundColor: colorYellow, borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 }
           ]
         },
@@ -861,7 +861,7 @@
           labels: provinces,
           datasets: [
             { label: metric === 'pud' ? 'Total PUD' : metricLabel, data: dataProvTotal, backgroundColor: '#0b57d0', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
-            { label: 'Proses DOF', data: dataProvDof, backgroundColor: '#188038', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
+            { label: 'Proses di Keuangan', data: dataProvDof, backgroundColor: '#188038', borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 },
             { label: 'Fisik Diterima', data: dataProvFisik, backgroundColor: colorYellow, borderRadius: 4, barPercentage: 0.6, categoryPercentage: 0.8 }
           ]
         },
@@ -913,7 +913,7 @@
       chartStatusInstance = new Chart(ctxStatus, {
         type: 'doughnut',
         data: {
-          labels: ['Data Masuk', 'Proses DOF', 'Fisik Diterima'], 
+          labels: ['Data Masuk', 'Proses di Keuangan', 'Fisik Diterima'], 
           datasets: [{
             data: [totalMasuk, totalDofSelesai, totalFisikCompleted],
             backgroundColor: ['#0b57d0', '#188038', colorYellow],
